@@ -1,27 +1,11 @@
 import pygame
 import math
 
+from Vector2D import Vector2D
+from Player import Player
+from Asteroid import Asteroid
+
 pygame.init()
-
-#==============================================================================
-
-class Vector2D :
-    x = 0
-    y = 0
-
-    def magnitude(self) :
-        return math.sqrt(self.x**2 + self.y**2)
-
-class Player :
-    pos = Vector2D()        # Position
-    rot = 0                 # Rotation
-    vel = Vector2D()        # Geschwindigkeit
-    acc = Vector2D()        # Beschleunigung
-
-class Asteroid :
-    pos = Vector2D()
-    rot = 0
-    vel = Vector2D()
 
 #==============================================================================
 
