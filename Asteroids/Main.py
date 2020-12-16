@@ -96,39 +96,45 @@ while gameActive :
     #    if player.acc.x < accMax.x :
     #        player.acc.x += accPerTick
 
-    if pressed_W :
+    if pressed_W and not pressed_S :
         player.acc.y = -accMax.y
-    if pressed_A :
+    if pressed_A and not pressed_D :
         player.acc.x = -accMax.x
-    if pressed_S :
+    if pressed_S and not pressed_W :
         player.acc.y = accMax.y
-    if pressed_D :
+    if pressed_D and not pressed_A :
         player.acc.x = accMax.x
 
     # Beschleunigung reduzieren
-    if not pressed_W :
-        if player.acc.y < 0 :
-            player.acc.y += accPerTick
-            if player.acc.y > 0:
-                player.acc.y = 0
+    #if not pressed_W :
+    #    if player.acc.y < 0 :
+    #        player.acc.y += accPerTick
+    #        if player.acc.y > 0:
+    #            player.acc.y = 0
 
-    if not pressed_A :
-        if player.acc.x < 0 :
-            player.acc.x += accPerTick
-            if player.acc.x > 0:
-                player.acc.x = 0
+    #if not pressed_A :
+    #    if player.acc.x < 0 :
+    #        player.acc.x += accPerTick
+    #        if player.acc.x > 0:
+    #            player.acc.x = 0
 
-    if not pressed_S :
-        if player.acc.y > 0 :
-            player.acc.y -= accPerTick
-            if player.acc.y < 0:
-                player.acc.y = 0
+    #if not pressed_S :
+    #    if player.acc.y > 0 :
+    #        player.acc.y -= accPerTick
+    #        if player.acc.y < 0:
+    #            player.acc.y = 0
 
-    if not pressed_D :
-        if player.acc.x > 0 :
-            player.acc.x -= accPerTick
-            if player.acc.x < 0:
-                player.acc.x = 0
+    #if not pressed_D :
+    #    if player.acc.x > 0 :
+    #        player.acc.x -= accPerTick
+    #        if player.acc.x < 0:
+    #            player.acc.x = 0
+
+    if pressed_W == pressed_S :
+        player.acc.y = 0
+
+    if pressed_A == pressed_D :
+        player.acc.x = 0
 
     # Beschleunigung limitieren
     if player.acc.x > accMax.x :
@@ -152,15 +158,14 @@ while gameActive :
         elif player.vel.x < 0 :
             player.acc.x = frictionPerTick
 
-    # Beschleunigung -> Geschwindigkeit
-    player.vel.x += player.acc.x
-    player.vel.y += player.acc.y
-
     if player.acc.y == 0 :
         if player.vel.y > 0 :
             player.vel.y -= frictionPerTick
         elif player.vel.y < 0 :
             player.vel.y += frictionPerTick
+
+    # Beschleunigung -> Geschwindigkeit
+    player.vel += player.acc
     
     # Geschwindigkeit limitieren
     if player.vel.x > velMax.x :
@@ -178,8 +183,7 @@ while gameActive :
         player.vel.y = 0
 
     # Geschwindigkeit -> Position
-    player.pos.x += player.vel.x
-    player.pos.y += player.vel.y
+    player.pos += player.vel
     
     # Spielfeldrand verlassen -> auf ggegenüberliegender Seite weiter
     if player.pos.x < 0 :
