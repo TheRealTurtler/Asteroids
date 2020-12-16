@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f98dbdc1-5a65-4d21-b697-5a4c90ede9e2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Asteroids.py</StartupFile>
+    <StartupFile>Main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,7 +24,7 @@
     <Compile Include="Asteroid.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Asteroids.py" />
+    <Compile Include="Main.py" />
     <Compile Include="Player.py">
       <SubType>Code</SubType>
     </Compile>

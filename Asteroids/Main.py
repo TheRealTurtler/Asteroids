@@ -29,8 +29,8 @@ clock = pygame.time.Clock()
 gameActive = True
 
 accMax = Vector2D()
-accMax.x = 1
-accMax.y = 1
+accMax.x = 0.5
+accMax.y = 0.5
 
 accPerTick = 0.1
 
@@ -38,7 +38,7 @@ velMax = Vector2D()
 velMax.x = 3
 velMax.y = 3
 
-frictionPerTick = 0.1
+frictionPerTick = 0.02
 
 pressed_W = False
 pressed_A = False
@@ -83,18 +83,27 @@ while gameActive :
     print(player.pos.x, player.pos.y, player.vel.x, player.vel.y, player.acc.x, player.acc.y, pressed_W, pressed_A, pressed_S, pressed_D)
 
     # Beschleunigung erhöhen
+    #if pressed_W :
+    #    if player.acc.y > -accMax.y :
+    #        player.acc.y -= accPerTick
+    #if pressed_A :
+    #    if player.acc.x > -accMax.x :
+    #        player.acc.x -= accPerTick
+    #if pressed_S :
+    #    if player.acc.y < accMax.y :
+    #        player.acc.y += accPerTick
+    #if pressed_D :
+    #    if player.acc.x < accMax.x :
+    #        player.acc.x += accPerTick
+
     if pressed_W :
-        if player.acc.y > -accMax.y :
-            player.acc.y -= accPerTick
+        player.acc.y = -accMax.y
     if pressed_A :
-        if player.acc.x > -accMax.x :
-            player.acc.x -= accPerTick
+        player.acc.x = -accMax.x
     if pressed_S :
-        if player.acc.y < accMax.y :
-            player.acc.y += accPerTick
+        player.acc.y = accMax.y
     if pressed_D :
-        if player.acc.x < accMax.x :
-            player.acc.x += accPerTick
+        player.acc.x = accMax.x
 
     # Beschleunigung reduzieren
     if not pressed_W :
