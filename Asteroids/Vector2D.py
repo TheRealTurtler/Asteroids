@@ -56,6 +56,56 @@ class Vector2D :
         else :
             return NotImplemented
 
+    # Addition
+    def __add__(self, v2) :
+        if type(v2) == Vector2D :
+            return Vector2D(self.x + v2.x, self.y + v2.y)
+        else :
+            return NotImplemented
+
+    # Multiplikation (links)
+    def __mult__(self, v2) :
+        if type(v2) in (int, float) :
+            return Vector2D(self.x * v2, self.y * v2)
+        elif type(v2) == Vector2D :
+            return self.x * v2.x + self.y * v2.y
+        else :
+            return NotImplemented
+
+    # Multiplikation (rechts)
+    def __rmult__(self, v2) :
+        return self * v2
+
+    # Subtraction
+    def __sub__(self, v2) :
+        return self + (v2 * -1)
+
+    # Division (links)
+    def __truediv__(self, v2) :
+        if type(v2) in (int, float) and v2 != 0 :
+            return Vector2D(self.x / v2, self.y / v2)
+        #elif type(v2) == Vector2D :
+        #    return Vector2D(self.x + v2.x, self.y + v2.y)
+        else :
+            return NotImplemented
+
+    # Division (rechts)
+    def __rtruediv__(self, v2) :
+        return self / v2
+
+    # Integer-Division
+    def __floordiv__(self, v2) :
+        if type(v2) == int and v2 != 0 :
+            return Vector2D(self.x // v2, self.y // v2)
+        #elif type(v2) == Vector2D :
+        #    return Vector2D(self.x + v2.x, self.y + v2.y)
+        else :
+            return NotImplemented
+
+    # Integer-Division (rechts)
+    def __floordiv__(self, v2) :
+        return self // v2
+
     # Betrag des Vektors
     def magnitude(self) :
         return math.sqrt(self.x**2 + self.y**2)
