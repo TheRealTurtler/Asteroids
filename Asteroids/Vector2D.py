@@ -106,6 +106,10 @@ class Vector2D :
     def __floordiv__(self, v2) :
         return self // v2
 
+    # Konvertierung in string
+    def __str__(self) :
+        return str(self.x) + ", " + str(self.y)
+
     # Betrag des Vektors
     def magnitude(self) :
         return math.sqrt(self.x**2 + self.y**2)

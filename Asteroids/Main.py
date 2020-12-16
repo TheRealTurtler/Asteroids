@@ -80,7 +80,7 @@ while gameActive :
         #elif event.type == pygame.MOUSEBUTTONDOWN :
 
 ##### Spiellogik
-    print(player.pos.x, player.pos.y, player.vel.x, player.vel.y, player.acc.x, player.acc.y, pressed_W, pressed_A, pressed_S, pressed_D)
+    print(player.pos, player.vel, player.acc, pressed_W, pressed_A, pressed_S, pressed_D)
 
     # Beschleunigung erhöhen
     #if pressed_W :
