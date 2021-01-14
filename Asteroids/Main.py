@@ -207,6 +207,13 @@ while gameActive :
 
 ##### Refreshrate
     clock.tick(60)
+    #clock.tick()
+
+##### FPS Anzeige
+    title = "Asteroids" \
+        + f" | Frame Time: {clock.get_rawtime()} ms" \
+        + f" | FPS: {clock.get_fps() : 6.1f}"
+    pygame.display.set_caption(title)
 
 # Spiel beenden
 pygame.quit()
