@@ -21,7 +21,7 @@ class Sound:
 	def play(self):
 		# play the sound file for 10 seconds and then stop it
 		self.sound.play()
-		print(self.wav_file)
+		#print(self.wav_file)
 
 	def shutdown(self):
 		# Sound nicht mehr verwenden
