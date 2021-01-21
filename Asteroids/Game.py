@@ -116,11 +116,14 @@ class Game :
 
 		# Projektile
 		if self.pressed_Space :
-			# Lasergun pew sound
-			self.gunsound.play()	
+			if pygame.time.get_ticks() - self.player.timeLastShot > 1000 / self.player.fireRate :
+				self.player.timeLastShot = pygame.time.get_ticks()
+			
+				# Lasergun pew sound
+				self.gunsound.play()	
 		
-			# Neues Projektil zur Liste hinzufügen
-			self.projectiles.append(Projectile(self.player.pos, Vector2D(0, 2)))
+				# Neues Projektil zur Liste hinzufügen
+				self.projectiles.append(Projectile(self.player.pos, Vector2D(0, 2)))
 
 		for p in self.projectiles[:] :
 			# Positionen aller Projektile aktualisieren

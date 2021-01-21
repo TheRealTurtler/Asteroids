@@ -23,6 +23,9 @@ class Player :
 		self.vel = Vector2D()        # Geschwindigkeit
 		self.acc = Vector2D()        # Beschleunigung
 
+		self.fireRate = 10
+		self.timeLastShot = 0
+
 	def update(self) :
 		# Beschleunigung limitieren
 		if self.acc.x > self.accMax.x :
