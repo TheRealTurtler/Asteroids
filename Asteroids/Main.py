@@ -193,7 +193,8 @@ while gameActive :
 
 ##### Rendern
 	#pygame.draw.rect(screen, WHITE, [player.pos.x - 10, player.pos.y - 10, 20, 20], 1)
-	pygame.draw.polygon(screen, WHITE, [(player.pos.x+10,player.pos.y+10),(player.pos.x+10,player.pos.y-10),(player.pos.x-10,player.pos.y-10),(player.pos.x-10,player.pos.y+10)],1)
+	
+	player.draw(screen, WHITE)
 
 	for p in projectiles :
 		p.draw(screen, WHITE)

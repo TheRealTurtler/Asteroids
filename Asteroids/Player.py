@@ -1,3 +1,5 @@
+import pygame
+
 from Vector2D import Vector2D
 
 class Player :
@@ -70,3 +72,21 @@ class Player :
 
 		# Geschwindigkeit -> Position
 		self.pos += self.vel
+
+	def draw(self, screen, color = pygame.Color(255, 255, 255)) :
+		if type(screen) != pygame.Surface :
+			return NotImplemented
+
+		if type(color) != pygame.Color :
+			return NotImplemented
+
+		pygame.draw.polygon(
+			screen, 
+			color, 
+			[
+			(self.pos.x + 10, self.pos.y + 10),
+			(self.pos.x + 10, self.pos.y - 10), 
+			(self.pos.x - 10, self.pos.y - 10), 
+			(self.pos.x - 10, self.pos.y + 10)
+			],
+			1)

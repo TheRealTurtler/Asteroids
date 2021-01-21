@@ -31,6 +31,7 @@
     <Compile Include="Projectile.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Sound.py" />
     <Compile Include="Vector2D.py">
       <SubType>Code</SubType>
     </Compile>
