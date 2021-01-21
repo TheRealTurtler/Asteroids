@@ -40,18 +40,6 @@ clock = pygame.time.Clock()
 
 gameActive = True
 
-accMax = Vector2D()
-accMax.x = 0.5
-accMax.y = 0.5
-
-accPerTick = 0.1
-
-velMax = Vector2D()
-velMax.x = 3
-velMax.y = 3
-
-frictionPerTick = 0.02
-
 pressed_W = False
 pressed_A = False
 pressed_S = False
@@ -119,13 +107,13 @@ while gameActive :
 	#        player.acc.x += accPerTick
 
 	if pressed_W and not pressed_S :
-		player.acc.y = -accMax.y
+		player.acc.y = -player.accMax.y
 	if pressed_A and not pressed_D :
-		player.acc.x = -accMax.x
+		player.acc.x = -player.accMax.x
 	if pressed_S and not pressed_W :
-		player.acc.y = accMax.y
+		player.acc.y = player.accMax.y
 	if pressed_D and not pressed_A :
-		player.acc.x = accMax.x
+		player.acc.x = player.accMax.x
 
 	# Beschleunigung reduzieren
 	#if not pressed_W :
@@ -158,54 +146,7 @@ while gameActive :
 	if pressed_A == pressed_D :
 		player.acc.x = 0
 
-	# Beschleunigung limitieren
-	if player.acc.x > accMax.x :
-		player.acc.x = accMax.x
-	elif player.acc.x < -accMax.x :
-		player.acc.x = -accMax.x
-	elif abs(player.acc.x) < 1e-10 :
-		player.acc.x = 0
-
-	if player.acc.y > accMax.y :
-		player.acc.y = accMax.y
-	elif player.acc.y < -accMax.y :
-		player.acc.y = -accMax.y
-	elif abs(player.acc.y) < 1e-10 :
-		player.acc.y = 0
-
-	# Reibung
-	if player.acc.x == 0 :
-		if player.vel.x > 0 :
-			player.acc.x = -frictionPerTick
-		elif player.vel.x < 0 :
-			player.acc.x = frictionPerTick
-
-	if player.acc.y == 0 :
-		if player.vel.y > 0 :
-			player.vel.y -= frictionPerTick
-		elif player.vel.y < 0 :
-			player.vel.y += frictionPerTick
-
-	# Beschleunigung -> Geschwindigkeit
-	player.vel += player.acc
-	
-	# Geschwindigkeit limitieren
-	if player.vel.x > velMax.x :
-		player.vel.x = velMax.x
-	elif player.vel.x < -velMax.x :
-		player.vel.x = -velMax.x
-	elif abs(player.vel.x) < 1e-10 :
-		player.vel.x = 0
-
-	if player.vel.y > velMax.y :
-		player.vel.y = velMax.y
-	elif player.vel.y < -velMax.y :
-		player.vel.y = -velMax.y
-	elif abs(player.vel.y) < 1e-10 :
-		player.vel.y = 0
-
-	# Geschwindigkeit -> Position
-	player.pos += player.vel
+	player.update()
 	
 	# Spielfeldrand verlassen -> auf ggegenüberliegender Seite weiter
 	if player.pos.x < 0 :
