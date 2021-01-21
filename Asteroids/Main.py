@@ -5,6 +5,7 @@ from Vector2D import Vector2D
 from Player import Player
 from Asteroid import Asteroid
 from Projectile import Projectile
+from Sound import Sound
 
 pygame.init()
 
@@ -13,6 +14,16 @@ pygame.init()
 WHITE = pygame.Color(255, 255, 255)
 BLACK = pygame.Color(0, 0, 0)
 
+#==============================================================================
+#Sound Einstellungen
+lasergun_wav = r'lasergun.wav'	#Laser pew sound lesen
+
+Sound.init()					#initialisieren von pygame.mixer
+
+gunsound=Sound(lasergun_wav)	#Instanz gunsound der Klasse Sound hat nun Laser pew sound
+
+pygame.mixer.music.load('Tetris.wav')	#Hintergrundmusik ist Tetristheme in pygame.music (keine Klasse da nur eine Hmusik)
+pygame.mixer.music.set_volume(0.03)		#leiser machen
 #==============================================================================
 
 player = Player()
@@ -48,6 +59,8 @@ pressed_D = False
 pressed_Space = False
 
 projectiles = []
+
+pygame.mixer.music.play(-1)		#Spiele tetris theme ab auf loop (-1)
 
 while gameActive :
 
@@ -207,7 +220,11 @@ while gameActive :
 
 	# Projektile
 	if pressed_Space :
+		#lasergun pew sound
+		gunsound.play()	
+		
 		projectiles.append(Projectile(player.pos, Vector2D(0, 2)))
+
 
 	for p in projectiles[:] :
 		p.update()
@@ -234,8 +251,9 @@ while gameActive :
 	screen.fill(BLACK)
 
 ##### Rendern
-	pygame.draw.rect(screen, WHITE, [player.pos.x - 10, player.pos.y - 10, 20, 20], 1)
-	
+	#pygame.draw.rect(screen, WHITE, [player.pos.x - 10, player.pos.y - 10, 20, 20], 1)
+	pygame.draw.polygon(screen, WHITE, [(player.pos.x+10,player.pos.y+10),(player.pos.x+10,player.pos.y-10),(player.pos.x-10,player.pos.y-10),(player.pos.x-10,player.pos.y+10)],1)
+
 	for p in projectiles :
 		p.draw(screen, WHITE)
 
