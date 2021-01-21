@@ -1,6 +1,6 @@
 import pygame
 
-from Vector2D import Vector2D
+from Vector2D import *
 
 class Projectile:
 	"""description of class"""
