@@ -1,6 +1,6 @@
 import pygame
 
-from Vector2D import Vector2D
+from Vector2D import *
 
 class Player :
 	"""description of class"""
@@ -84,9 +84,9 @@ class Player :
 			screen, 
 			color, 
 			[
-			(self.pos.x + 10, self.pos.y + 10),
-			(self.pos.x + 10, self.pos.y - 10), 
-			(self.pos.x - 10, self.pos.y - 10), 
-			(self.pos.x - 10, self.pos.y + 10)
+			(self.pos.x + 0, self.pos.y + 0),
+			(self.pos.x - 5, self.pos.y - 15), 
+			(self.pos.x + 0, self.pos.y - 10), 
+			(self.pos.x + 5, self.pos.y - 15)
 			],
 			1)

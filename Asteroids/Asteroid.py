@@ -1,4 +1,4 @@
-from Vector2D import Vector2D
+from Vector2D import *
 
 class Asteroid :
     """description of class"""
