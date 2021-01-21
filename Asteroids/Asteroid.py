@@ -1,8 +1,24 @@
+import pygame
+
 from Vector2D import *
 
 class Asteroid :
-    """description of class"""
+	"""description of class"""
 
-    pos = Vector2D()
-    rot = 0
-    vel = Vector2D()
+	def __init__(self, pos = Vector2D(0, 0), vel = Vector2D(0, 0), size = 3) :
+		self.pos = pos
+		self.vel = vel
+		self.size = size
+		self.rot = 0
+
+	def update(self) :
+		self.pos += self.vel
+	
+	def draw(self, screen, color = pygame.Color(255, 255, 255)) :
+		if type(screen) != pygame.Surface :
+			return NotImplemented
+		
+		if type(color) != pygame.Color :
+			return NotImplemented
+
+		pygame.draw.circle(screen, color, (self.pos.x, self.pos.y), self.size * 10, 1)

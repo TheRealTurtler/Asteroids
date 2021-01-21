@@ -11,11 +11,8 @@ screenSize = (640, 480)
 game = Game(screenSize)
 
 screen = pygame.display.set_mode(screenSize)
-pygame.display.set_caption("Asteroids")
 
 clock = pygame.time.Clock()
-
-pygame.mixer.music.play(-1)		# Spiele tetris theme ab auf loop (-1)
 
 #==============================================================================
 

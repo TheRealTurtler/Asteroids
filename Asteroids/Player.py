@@ -5,23 +5,22 @@ from Vector2D import *
 class Player :
 	"""description of class"""
 
-	accMax = Vector2D()
-	accMax.x = 0.5
-	accMax.y = 0.5
-
-	accPerTick = 0.1
-
-	velMax = Vector2D()
-	velMax.x = 3
-	velMax.y = 3
-
+	accMax = Vector2D(0.5, 0.5)
+	
+	#accPerTick = 0.1
 	frictionPerTick = 0.02
+
+	velMax = Vector2D(3, 3)
+	
 
 	def __init__(self) :
 		self.pos = Vector2D()        # Position
 		self.rot = 0                 # Rotation
 		self.vel = Vector2D()        # Geschwindigkeit
 		self.acc = Vector2D()        # Beschleunigung
+
+		self.fireRate = 10
+		self.timeLastShot = 0
 
 	def update(self) :
 		# Beschleunigung limitieren
