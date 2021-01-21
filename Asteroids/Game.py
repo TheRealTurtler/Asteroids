@@ -1,6 +1,7 @@
 import pygame
 
 from Player import *
+from Asteroid import *
 from Projectile import *
 from Vector2D import *
 from Sound import *
@@ -29,6 +30,7 @@ class Game :
 		self.pressed_Space = False
 
 		self.projectiles = []
+		self.asteroids = [Asteroid(Vector2D(a*50, a*50)) for a in range(1, 5)]
 
 		self.player = Player()
 
@@ -43,10 +45,10 @@ class Game :
 
 		self.gunsound = Sound(lasergun_wav)		# Instanz gunsound der Klasse Sound hat nun Laser pew sound
 
-		pygame.mixer.music.load('Tetris.wav')	# Hintergrundmusik ist Tetristheme in pygame.music (keine Klasse da nur eine Hmusik)
+		pygame.mixer.music.load('Tetris.wav')	# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hmusik)
 		pygame.mixer.music.set_volume(0.03)		# leiser machen
 
-		pygame.mixer.music.play(-1)		# Spiele tetris theme ab auf loop (-1)
+		pygame.mixer.music.play(-1)				# Spiele Tetris-Theme als Loop (-1) ab
 		
 
 	def handleEvents(self) :
@@ -152,11 +154,30 @@ class Game :
 			if p.wrap > p.maxWrap :
 				self.projectiles.remove(p)
 
+		for a in self.asteroids[:] :
+			# Positionen aller Asteroiden aktualisieren
+			a.update()
+
+			# Spielfeldrand verlassen -> auf ggegenüberliegender Seite weiter
+			if a.pos.x < 0 :
+				a.pos.x = self.screenSize[0]
+			elif a.pos.x > self.screenSize[0] :
+				a.pos.x = 0
+
+			if a.pos.y < 0 :
+				a.pos.y = self.screenSize[1]
+			elif a.pos.y > self.screenSize[1] :
+				a.pos.y = 0
+
 
 	def draw(self, screen) :
 		# Spieler zeichnen
 		self.player.draw(screen, self.WHITE)
 
-		#Projektile zeichnen
+		# Projektile zeichnen
 		for p in self.projectiles :
 			p.draw(screen, self.WHITE)
+
+		# Asteroiden zeichnen
+		for a in self.asteroids :
+			a.draw(screen, self.WHITE)
