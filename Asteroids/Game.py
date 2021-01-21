@@ -34,6 +34,8 @@ class Game :
 
 		self.player.pos = Vector2D(100, 100)
 
+		pygame.display.set_caption("Asteroids")
+
 		# Sound Einstellungen
 		lasergun_wav = r'lasergun.wav'			# Laser pew sound lesen
 
@@ -43,6 +45,8 @@ class Game :
 
 		pygame.mixer.music.load('Tetris.wav')	# Hintergrundmusik ist Tetristheme in pygame.music (keine Klasse da nur eine Hmusik)
 		pygame.mixer.music.set_volume(0.03)		# leiser machen
+
+		pygame.mixer.music.play(-1)		# Spiele tetris theme ab auf loop (-1)
 		
 
 	def handleEvents(self) :
