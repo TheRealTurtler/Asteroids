@@ -11,7 +11,7 @@ class Player :
 	frictionPerTick = 0.02
 	rotPerTick = 5
 
-	velMax = pygame.Vector2(3, 3)
+	speedMax = 2
 
 	bulletSpawnOffset = 5
 	
@@ -71,19 +71,10 @@ class Player :
 		self.vel += self.acc
 	
 		# Geschwindigkeit limitieren
-		if self.vel.x > self.velMax.x :
-			self.vel.x = self.velMax.x
-		elif self.vel.x < -self.velMax.x :
-			self.vel.x = -self.velMax.x
-		elif abs(self.vel.x) < 1e-10 :
-			self.vel.x = 0
-
-		if self.vel.y > self.velMax.y :
-			self.vel.y = self.velMax.y
-		elif self.vel.y < -self.velMax.y :
-			self.vel.y = -self.velMax.y
-		elif abs(self.vel.y) < 1e-10 :
-			self.vel.y = 0
+		if self.vel.magnitude() > self.speedMax :
+			self.vel = self.speedMax * self.vel.normalize()
+		elif abs(self.vel.magnitude()) < 1e-10 :
+			self.vel = pygame.Vector2(0, 0)
 
 		# Geschwindigkeit -> Position
 		self.pos += self.vel
