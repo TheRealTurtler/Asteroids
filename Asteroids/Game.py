@@ -55,6 +55,19 @@ class Game :
 		pygame.mixer.music.play(-1)				# Spiele Tetris-Theme als Loop (-1) ab
 		
 
+	def colCircle(self, col1, col2) :
+		if type(col1) not in (Player, Asteroid, Projectile) :
+			raise TypeError
+
+		if type(col2) not in (Player, Asteroid, Projectile) :
+			raise TypeError
+
+		if (col2.pos - col1.pos).magnitude() < col1.size + col2.size :
+			return True
+
+		return False
+
+
 	def handleEvents(self) :
 		for event in pygame.event.get() :
 
@@ -111,13 +124,13 @@ class Game :
 	def update(self) :
 		# Beschleunigung nach gedrückten Tasten festlegen
 		if self.pressed_W and not self.pressed_S :
-			self.player.acc.y = -self.player.accMax.y
+			self.player.acc.y = -self.player.accMax
 		if self.pressed_A and not self.pressed_D :
-			self.player.acc.x = -self.player.accMax.x
+			self.player.acc.x = -self.player.accMax
 		if self.pressed_S and not self.pressed_W :
-			self.player.acc.y = self.player.accMax.y
+			self.player.acc.y = self.player.accMax
 		if self.pressed_D and not self.pressed_A :
-			self.player.acc.x = self.player.accMax.x
+			self.player.acc.x = self.player.accMax
 
 		# Beschleunigung = 0, wenn entgegengesetzte Tasten gedrückt werden
 		if self.pressed_W == self.pressed_S :
@@ -199,6 +212,41 @@ class Game :
 				a.pos.y = self.screenSize[1]
 			elif a.pos.y > self.screenSize[1] :
 				a.pos.y = 0
+
+		# Kollision
+		for col1 in self.projectiles[:] :
+			collision = False
+
+			if self.colCircle(col1, self.player) :
+				collision = True
+				print("GAME OVER")				# TODO
+
+			for col2 in self.asteroids[:] :
+				if self.colCircle(col1, col2) :
+					collision = True
+					self.asteroids.remove(col2)
+					break
+
+			#for col2 in self.projectiles[:] :
+			#	if col1 == col2 :
+			#		continue
+
+			#	if self.colCircle(col1, col2) :
+			#		collision = True
+			#		self.projectiles.remove(col2)
+			#		break
+
+			if collision :
+				self.projectiles.remove(col1)
+				continue
+
+		for col1 in self.asteroids[:] :
+			if self.colCircle(col1, self.player) :
+				self.asteroids.remove(col1)
+				print("GAME OVER")				# TODO
+
+		#print(len(self.projectiles))
+		print(self.player.pos, self.player.vel, self.player.acc, self.pressed_W, self.pressed_A, self.pressed_S, self.pressed_D)
 
 
 	def draw(self, screen) :
