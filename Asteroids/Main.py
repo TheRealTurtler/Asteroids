@@ -22,7 +22,7 @@ while game.gameActive :
 	game.handleEvents()
 
 ##### Spiellogik
-	print(game.player.pos, game.player.vel, game.player.acc, game.pressed_W, game.pressed_A, game.pressed_S, game.pressed_D)
+	#print(game.player.pos, game.player.vel, game.player.acc, game.pressed_W, game.pressed_A, game.pressed_S, game.pressed_D)
 	#print(len(projectiles))
 
 	game.update()

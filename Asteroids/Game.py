@@ -28,6 +28,10 @@ class Game :
 		self.pressed_S = False
 		self.pressed_D = False
 		self.pressed_Space = False
+		self.pressed_Up = False
+		self.pressed_Down = False
+		self.pressed_Left = False
+		self.pressed_Right = False
 
 		self.projectiles = []
 		self.asteroids = [Asteroid(pygame.Vector2(a*50, a*50)) for a in range(1, 5)]
@@ -70,6 +74,14 @@ class Game :
 					self.pressed_D = True
 				elif event.key == pygame.K_SPACE :
 					self.pressed_Space = True
+				elif event.key == pygame.K_UP :
+					self.pressed_Up = True
+				elif event.key == pygame.K_DOWN :
+					self.pressed_Down = True
+				elif event.key == pygame.K_LEFT :
+					self.pressed_Left = True
+				elif event.key == pygame.K_RIGHT :
+					self.pressed_Right = True
 
 			# Key released
 			elif event.type == pygame.KEYUP :
@@ -83,6 +95,14 @@ class Game :
 					self.pressed_D = False
 				elif event.key == pygame.K_SPACE :
 					self.pressed_Space = False
+				elif event.key == pygame.K_UP :
+					self.pressed_Up = False
+				elif event.key == pygame.K_DOWN :
+					self.pressed_Down = False
+				elif event.key == pygame.K_LEFT :
+					self.pressed_Left = False
+				elif event.key == pygame.K_RIGHT :
+					self.pressed_Right = False
 
 			# Mouse button pressed
 			#elif event.type == pygame.MOUSEBUTTONDOWN :
@@ -105,6 +125,12 @@ class Game :
 
 		if self.pressed_A == self.pressed_D :
 			self.player.acc.x = 0
+
+		# Rotation Spieler
+		if self.pressed_Left and not self.pressed_Right :
+			self.player.rot -= self.player.rotPerTick
+		if self.pressed_Right and not self.pressed_Left :
+			self.player.rot += self.player.rotPerTick
 
 		# Spielerposition aktualisieren
 		self.player.update()
@@ -129,7 +155,12 @@ class Game :
 				self.gunsound.play()	
 		
 				# Neues Projektil zur Liste hinzufügen
-				self.projectiles.append(Projectile(pygame.Vector2(self.player.pos), pygame.Vector2(0, 2)))
+				self.projectiles.append(
+					Projectile(
+						pygame.Vector2(self.player.bulletSpawn),
+						pygame.Vector2(self.player.bulletSpawn - self.player.pos)
+						)
+					)
 
 		for p in self.projectiles[:] :
 			# Positionen aller Projektile aktualisieren
@@ -150,11 +181,11 @@ class Game :
 				p.pos.y = 0
 				p.wrap += 1
 
-			# Projektile löschen, wenn sie zu oft den Bildschirmrandverlassen haben
-			if p.wrap > p.maxWrap :
+			# Projektile löschen, wenn sie zu oft den Bildschirmrandverlassen haben oder stehen bleiben
+			if p.wrap > p.maxWrap or p.dir == pygame.Vector2(0, 0) :
 				self.projectiles.remove(p)
 
-		for a in self.asteroids[:] :
+		for a in self.asteroids :
 			# Positionen aller Asteroiden aktualisieren
 			a.update()
 
