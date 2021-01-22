@@ -1,26 +1,41 @@
 import pygame
 
-from Vector2D import *
+#from Vector2D import *
 
 class Player :
 	"""description of class"""
 
-	accMax = Vector2D(0.5, 0.5)
+	accMax = pygame.Vector2(0.5, 0.5)
 	
 	#accPerTick = 0.1
 	frictionPerTick = 0.02
+	rotPerTick = 5
 
-	velMax = Vector2D(3, 3)
+	velMax = pygame.Vector2(3, 3)
+
+	bulletSpawnOffset = 5
 	
 
 	def __init__(self) :
-		self.pos = Vector2D()        # Position
-		self.rot = 0                 # Rotation
-		self.vel = Vector2D()        # Geschwindigkeit
-		self.acc = Vector2D()        # Beschleunigung
+		self.pos = pygame.Vector2(0, 0)		    # Position
+		self.vel = pygame.Vector2(0, 0)			# Geschwindigkeit
+		self.acc = pygame.Vector2(0, 0)			# Beschleunigung
+		self.rot = 0							# Rotation
 
 		self.fireRate = 10
 		self.timeLastShot = 0
+
+		self.pointOffsets = [
+			pygame.Vector2(0, 5),
+			pygame.Vector2(-5, -10), 
+			pygame.Vector2(0, -5), 
+			pygame.Vector2(5, -10)
+			]
+
+		self.points = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
+
+		self.bulletSpawn = pygame.Vector2((self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
+		
 
 	def update(self) :
 		# Beschleunigung limitieren
@@ -72,20 +87,20 @@ class Player :
 		# Geschwindigkeit -> Position
 		self.pos += self.vel
 
+		# Rotation
+		self.rot %= 360
+
+		for (idx, offset) in enumerate(self.pointOffsets) :
+			self.points[idx] = self.pos + offset.rotate(self.rot)
+
+		self.bulletSpawn = pygame.Vector2((self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
+
+
 	def draw(self, screen, color = pygame.Color(255, 255, 255)) :
 		if type(screen) != pygame.Surface :
-			return NotImplemented
+			return NotImplemented	# raise TypeError
 
 		if type(color) != pygame.Color :
 			return NotImplemented
 
-		pygame.draw.polygon(
-			screen, 
-			color, 
-			[
-			(self.pos.x + 0, self.pos.y + 0),
-			(self.pos.x - 5, self.pos.y - 15), 
-			(self.pos.x + 0, self.pos.y - 10), 
-			(self.pos.x + 5, self.pos.y - 15)
-			],
-			1)
+		pygame.draw.polygon(screen, color, self.points, 1)
