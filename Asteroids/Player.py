@@ -21,6 +21,7 @@ class Player :
 		self.vel = pygame.Vector2(0, 0)			# Geschwindigkeit
 		self.acc = pygame.Vector2(0, 0)			# Beschleunigung
 		self.rot = 0							# Rotation
+		self.size = 10
 
 		self.fireRate = 10
 		self.timeLastShot = 0
@@ -104,3 +105,4 @@ class Player :
 			return NotImplemented
 
 		pygame.draw.polygon(screen, color, self.points, 1)
+		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)

@@ -5,7 +5,7 @@ import pygame
 class Asteroid :
 	"""description of class"""
 
-	def __init__(self, pos = pygame.Vector2(0, 0), vel = pygame.Vector2(0, 0), size = 3) :
+	def __init__(self, pos = pygame.Vector2(0, 0), vel = pygame.Vector2(0, 0), size = 30) :
 		self.pos = pos
 		self.vel = vel
 		self.size = size
@@ -21,4 +21,4 @@ class Asteroid :
 		if type(color) != pygame.Color :
 			return NotImplemented
 
-		pygame.draw.circle(screen, color, self.pos, self.size * 10, 1)
+		pygame.draw.circle(screen, color, self.pos, self.size, 1)

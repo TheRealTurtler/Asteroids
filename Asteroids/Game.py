@@ -55,6 +55,19 @@ class Game :
 		pygame.mixer.music.play(-1)				# Spiele Tetris-Theme als Loop (-1) ab
 		
 
+	def colCircle(self, col1, col2) :
+		if type(col1) not in (Player, Asteroid, Projectile) :
+			raise TypeError
+
+		if type(col2) not in (Player, Asteroid, Projectile) :
+			raise TypeError
+
+		if (col2.pos - col1.pos).magnitude() < col1.size + col2.size :
+			return True
+
+		return False
+
+
 	def handleEvents(self) :
 		for event in pygame.event.get() :
 
@@ -199,6 +212,40 @@ class Game :
 				a.pos.y = self.screenSize[1]
 			elif a.pos.y > self.screenSize[1] :
 				a.pos.y = 0
+
+		# Kollision
+		for col1 in self.projectiles[:] :
+			collision = False
+
+			if self.colCircle(col1, self.player) :
+				collision = True
+				print("GAME OVER")				# TODO
+
+			for col2 in self.asteroids[:] :
+				if self.colCircle(col1, col2) :
+					collision = True
+					self.asteroids.remove(col2)
+					break
+
+			#for col2 in self.projectiles[:] :
+			#	if col1 == col2 :
+			#		continue
+
+			#	if self.colCircle(col1, col2) :
+			#		collision = True
+			#		self.projectiles.remove(col2)
+			#		break
+
+			if collision :
+				self.projectiles.remove(col1)
+				continue
+
+		for col1 in self.asteroids[:] :
+			if self.colCircle(col1, self.player) :
+				self.asteroids.remove(col1)
+				print("GAME OVER")				# TODO
+
+		print(len(self.projectiles))
 
 
 	def draw(self, screen) :
