@@ -3,7 +3,7 @@ import pygame
 from Player import *
 from Asteroid import *
 from Projectile import *
-from Vector2D import *
+#from Vector2D import *
 from Sound import *
 
 class Game :
@@ -30,11 +30,11 @@ class Game :
 		self.pressed_Space = False
 
 		self.projectiles = []
-		self.asteroids = [Asteroid(Vector2D(a*50, a*50)) for a in range(1, 5)]
+		self.asteroids = [Asteroid(pygame.Vector2(a*50, a*50)) for a in range(1, 5)]
 
 		self.player = Player()
 
-		self.player.pos = Vector2D(100, 100)
+		self.player.pos = pygame.Vector2(100, 100)
 
 		pygame.display.set_caption("Asteroids")
 
@@ -129,7 +129,7 @@ class Game :
 				self.gunsound.play()	
 		
 				# Neues Projektil zur Liste hinzufügen
-				self.projectiles.append(Projectile(self.player.pos, Vector2D(0, 2)))
+				self.projectiles.append(Projectile(pygame.Vector2(self.player.pos), pygame.Vector2(0, 2)))
 
 		for p in self.projectiles[:] :
 			# Positionen aller Projektile aktualisieren

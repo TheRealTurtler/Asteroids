@@ -1,23 +1,23 @@
 import pygame
 
-from Vector2D import *
+#from Vector2D import *
 
 class Player :
 	"""description of class"""
 
-	accMax = Vector2D(0.5, 0.5)
+	accMax = pygame.Vector2(0.5, 0.5)
 	
 	#accPerTick = 0.1
 	frictionPerTick = 0.02
 
-	velMax = Vector2D(3, 3)
+	velMax = pygame.Vector2(3, 3)
 	
 
 	def __init__(self) :
-		self.pos = Vector2D()        # Position
-		self.rot = 0                 # Rotation
-		self.vel = Vector2D()        # Geschwindigkeit
-		self.acc = Vector2D()        # Beschleunigung
+		self.pos = pygame.Vector2(0, 0)     # Position
+		self.rot = 0						# Rotation
+		self.vel = pygame.Vector2(0, 0)			# Geschwindigkeit
+		self.acc = pygame.Vector2(0, 0)			# Beschleunigung
 
 		self.fireRate = 10
 		self.timeLastShot = 0

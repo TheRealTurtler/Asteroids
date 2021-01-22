@@ -1,15 +1,15 @@
 import pygame
 
-from Vector2D import *
+#from Vector2D import *
 
 class Projectile:
 	"""description of class"""
 
-	def __init__(self, pos = Vector2D(0, 0), vel = Vector2D(0, 0), size = 1) :
-		if type(pos) != Vector2D :
+	def __init__(self, pos = pygame.Vector2(0, 0), vel = pygame.Vector2(0, 0), size = 1) :
+		if type(pos) != pygame.Vector2 :
 			return NotImplemented
 
-		if type(vel) != Vector2D :
+		if type(vel) != pygame.Vector2 :
 			return NotImplemented
 
 		if type(size) not in (int, float) :
@@ -31,4 +31,4 @@ class Projectile:
 		if type(color) != pygame.Color :
 			return NotImplemented
 
-		pygame.draw.circle(screen, color, (self.pos.x, self.pos.y), self.size)
+		pygame.draw.circle(screen, color, self.pos, self.size)
