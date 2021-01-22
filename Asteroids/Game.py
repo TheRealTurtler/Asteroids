@@ -124,13 +124,13 @@ class Game :
 	def update(self) :
 		# Beschleunigung nach gedrückten Tasten festlegen
 		if self.pressed_W and not self.pressed_S :
-			self.player.acc.y = -self.player.accMax.y
+			self.player.acc.y = -self.player.accMax
 		if self.pressed_A and not self.pressed_D :
-			self.player.acc.x = -self.player.accMax.x
+			self.player.acc.x = -self.player.accMax
 		if self.pressed_S and not self.pressed_W :
-			self.player.acc.y = self.player.accMax.y
+			self.player.acc.y = self.player.accMax
 		if self.pressed_D and not self.pressed_A :
-			self.player.acc.x = self.player.accMax.x
+			self.player.acc.x = self.player.accMax
 
 		# Beschleunigung = 0, wenn entgegengesetzte Tasten gedrückt werden
 		if self.pressed_W == self.pressed_S :
@@ -245,7 +245,8 @@ class Game :
 				self.asteroids.remove(col1)
 				print("GAME OVER")				# TODO
 
-		print(len(self.projectiles))
+		#print(len(self.projectiles))
+		print(self.player.pos, self.player.vel, self.player.acc, self.pressed_W, self.pressed_A, self.pressed_S, self.pressed_D)
 
 
 	def draw(self, screen) :

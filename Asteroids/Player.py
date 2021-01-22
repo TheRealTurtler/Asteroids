@@ -5,7 +5,7 @@ import pygame
 class Player :
 	"""description of class"""
 
-	accMax = pygame.Vector2(0.5, 0.5)
+	accMax = 0.4
 	
 	#accPerTick = 0.1
 	frictionPerTick = 0.02
@@ -40,19 +40,8 @@ class Player :
 
 	def update(self) :
 		# Beschleunigung limitieren
-		if self.acc.x > self.accMax.x :
-			self.acc.x = self.accMax.x
-		elif self.acc.x < -self.accMax.x :
-			self.acc.x = -self.accMax.x
-		elif abs(self.acc.x) < 1e-10 :
-			self.acc.x = 0
-
-		if self.acc.y > self.accMax.y :
-			self.acc.y = self.accMax.y
-		elif self.acc.y < -self.accMax.y :
-			self.acc.y = -self.accMax.y
-		elif abs(self.acc.y) < 1e-10 :
-			self.acc.y = 0
+		if self.acc.magnitude() > self.accMax :
+			self.acc = self.accMax * self.acc.normalize()
 
 		# Reibung
 		if self.acc.x == 0 :
@@ -63,21 +52,31 @@ class Player :
 
 		if self.acc.y == 0 :
 			if self.vel.y > 0 :
-				self.vel.y -= self.frictionPerTick
+				self.acc.y -= self.frictionPerTick
 			elif self.vel.y < 0 :
-				self.vel.y += self.frictionPerTick
+				self.acc.y += self.frictionPerTick
 
 		# Beschleunigung -> Geschwindigkeit
 		self.vel += self.acc
+
+		# Untergrenze Beschleunigung
+		if abs(self.acc.x) < 1e-5 :
+			self.acc.x = 0
+		if abs(self.acc.y) < 1e-5 :
+			self.acc.y = 0
 	
 		# Geschwindigkeit limitieren
 		if self.vel.magnitude() > self.speedMax :
 			self.vel = self.speedMax * self.vel.normalize()
-		elif abs(self.vel.magnitude()) < 1e-10 :
-			self.vel = pygame.Vector2(0, 0)
 
 		# Geschwindigkeit -> Position
 		self.pos += self.vel
+
+		# Untergrenze Geschwindigleit
+		if abs(self.vel.x) < self.frictionPerTick :
+			self.vel.x = 0
+		if abs(self.vel.y) < self.frictionPerTick :
+			self.vel.y = 0
 
 		# Rotation
 		self.rot %= 360
