@@ -1,4 +1,5 @@
 import pygame
+import random
 
 from Player import Player
 from Asteroid import Asteroid
@@ -19,6 +20,9 @@ class Game:
 		if len(screenSize) != 2:
 			raise IndexError
 
+		# Zufallszahlen initialisieren
+		random.seed()
+
 		self.screenSize = screenSize
 
 		self.gameActive = True
@@ -34,7 +38,7 @@ class Game:
 		self.pressed_Right = False
 
 		self.projectiles = []
-		self.asteroids = [Asteroid(pygame.Vector2(a * 50, a * 50)) for a in range(1, 5)]
+		self.asteroids = []
 
 		self.player = Player()
 
@@ -119,6 +123,25 @@ class Game:
 	# elif event.type == pygame.MOUSEBUTTONDOWN :
 
 	def update(self):
+		# Asteroiden spawnen
+		if len(self.asteroids) == 0:		# Neue Asteroiden spawnen, wenn keine mehr da sind
+			for a in range(0, random.randrange(1, 5)):		# Zufällig zwischen 1 und 5 Asteroiden spawnen
+				pos = self.player.pos
+
+				# Asteroid nicht direkt auf Spieler spawnen
+				while (pos - self.player.pos).magnitude() < Asteroid.sizeBig * 4:
+					pos = pygame.Vector2(
+							random.randrange(0, self.screenSize[0]),		# Zufällige Position auf dem Bildschirm
+							random.randrange(0, self.screenSize[1])
+					)
+
+				vel = pygame.Vector2(
+						(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
+						(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
+				)
+
+				self.asteroids.append(Asteroid(pos, vel))
+
 		# Beschleunigung nach gedrückten Tasten festlegen
 		if self.pressed_W and not self.pressed_S:
 			self.player.acc.y = -self.player.accMax
