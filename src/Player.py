@@ -1,8 +1,6 @@
 import pygame
 
 
-# from Vector2D import *
-
 class Player:
 	"""description of class"""
 

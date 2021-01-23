@@ -1,12 +1,12 @@
 import pygame
 
-from Game import *
+from Game import Game
 
 pygame.init()
 
 # ==============================================================================
 
-screenSize = (640, 480)
+screenSize = (1280, 720)
 
 game = Game(screenSize)
 

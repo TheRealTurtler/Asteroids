@@ -1,23 +1,21 @@
 import pygame
 
 
-# from Vector2D import *
-
 class Projectile:
 	"""description of class"""
 
-	def __init__(self, pos, dir, speed = 2, size = 1):
+	def __init__(self, pos, direction, speed = 2, size = 1):
 		if type(pos) != pygame.Vector2:
 			raise TypeError
 
-		if type(dir) != pygame.Vector2:
+		if type(direction) != pygame.Vector2:
 			raise TypeError
 
 		if type(size) not in (int, float):
 			raise TypeError
 
 		self.pos = pos
-		self.dir = dir.normalize() if dir != pygame.Vector2(0, 0) else pygame.Vector2(0, 0)
+		self.dir = direction.normalize() if direction != pygame.Vector2(0, 0) else pygame.Vector2(0, 0)
 		self.speed = speed
 		self.size = size
 		self.wrap = 0

@@ -9,7 +9,7 @@ class Sound:
 	def init(quality = 'low'):
 		pygame.mixer.init()  # initialisieren mit Standardwerten (frequency=44100, size=-16, channels=2, buffer=512)
 
-		# pygame.mixer.set_reserved(4)       #soundchannel reservieren vllt. dann wichtig bei mehrerern SFX
+		# pygame.mixer.set_reserved(4)       #soundchannel reservieren vllt. dann wichtig bei mehreren SFX
 
 	def __init__(self, wav_file):
 		# load the sound file

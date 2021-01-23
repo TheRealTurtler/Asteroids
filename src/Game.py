@@ -1,9 +1,9 @@
 import pygame
 
-from Player import *
-from Asteroid import *
-from Projectile import *
-from Sound import *
+from Player import Player
+from Asteroid import Asteroid
+from Projectile import Projectile
+from Sound import Sound
 
 
 class Game:
@@ -43,16 +43,16 @@ class Game:
 		pygame.display.set_caption("Asteroids")
 
 		# Sound Einstellungen
-		lasergun_wav = r'resources/lasergun.wav'  # Laser pew sound lesen
+		laser_wav = r'resources/laser.wav'  # Laser pew sound lesen
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
-		self.gunsound = Sound(lasergun_wav)  # Instanz gunsound der Klasse Sound hat nun Laser pew sound
+		self.gunSound = Sound(laser_wav)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
 
-		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hmusik)
+		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('resources/Tetris.wav')
-		pygame.mixer.music.set_volume(0.03)  # leiser machen
-		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
+		pygame.mixer.music.set_volume(0.03)  	# leiser machen
+		pygame.mixer.music.play(-1)  			# Spiele Tetris-Theme als Loop (-1) ab
 
 	def colCircle(self, col1, col2):
 		if type(col1) not in (Player, Asteroid, Projectile):
@@ -161,8 +161,8 @@ class Game:
 			if pygame.time.get_ticks() - self.player.timeLastShot > 1000 / self.player.fireRate:
 				self.player.timeLastShot = pygame.time.get_ticks()
 
-				# Lasergun pew sound
-				self.gunsound.play()
+				# Laser sound
+				self.gunSound.play()
 
 				# Neues Projektil zur Liste hinzufügen
 				self.projectiles.append(
@@ -225,13 +225,13 @@ class Game:
 					break
 
 			# for col2 in self.projectiles[:] :
-			#	if col1 == col2 :
-			#		continue
-
-			#	if self.colCircle(col1, col2) :
-			#		collision = True
-			#		self.projectiles.remove(col2)
-			#		break
+			# 	if col1 == col2 :
+			# 		continue
+			#
+			# 	if self.colCircle(col1, col2) :
+			# 		collision = True
+			# 		self.projectiles.remove(col2)
+			# 		break
 
 			if collision:
 				self.projectiles.remove(col1)
