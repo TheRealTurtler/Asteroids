@@ -4,9 +4,17 @@ import pygame
 class Asteroid:
     """description of class"""
 
-    def __init__(self, pos=pygame.Vector2(0, 0), vel=pygame.Vector2(0, 0), size=30):
+    sizeBig = 60
+    sizeMedium = 40
+    sizeSmall = 20
+
+    speedMultiplierBig = 1
+    speedMultiplierMedium = 1.5
+    speedMultiplierSmall = 2
+
+    def __init__(self, pos, vel = pygame.Vector2(0, 0), size = sizeBig, speedMultiplier = speedMultiplierBig):
         self.pos = pos
-        self.vel = vel
+        self.vel = vel * speedMultiplier
         self.size = size
         self.rot = 0
 
