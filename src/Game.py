@@ -55,8 +55,8 @@ class Game:
 
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('../resources/Tetris.wav')
-		pygame.mixer.music.set_volume(0.03)  	# leiser machen
-		pygame.mixer.music.play(-1)  			# Spiele Tetris-Theme als Loop (-1) ab
+		pygame.mixer.music.set_volume(0.03)  # leiser machen
+		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
 
 	def colCircle(self, col1, col2):
 		if type(col1) not in (Player, Asteroid, Projectile):
@@ -124,20 +124,20 @@ class Game:
 
 	def update(self):
 		# Asteroiden spawnen
-		if len(self.asteroids) == 0:		# Neue Asteroiden spawnen, wenn keine mehr da sind
-			for a in range(0, random.randrange(1, 5)):		# Zufällig zwischen 1 und 5 Asteroiden spawnen
+		if len(self.asteroids) == 0:  # Neue Asteroiden spawnen, wenn keine mehr da sind
+			for a in range(0, random.randrange(1, 5)):  # Zufällig zwischen 1 und 5 Asteroiden spawnen
 				pos = self.player.pos
 
 				# Asteroid nicht direkt auf Spieler spawnen
 				while (pos - self.player.pos).magnitude() < Asteroid.sizeBig * 4:
 					pos = pygame.Vector2(
-							random.randrange(0, self.screenSize[0]),		# Zufällige Position auf dem Bildschirm
-							random.randrange(0, self.screenSize[1])
+						random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
+						random.randrange(0, self.screenSize[1])
 					)
 
 				vel = pygame.Vector2(
-						(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
-						(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
+					(random.random() - 0.5) * 4,  # Zufällige Geschwindigkeit
+					(random.random() - 0.5) * 4  # * 4, sodass maximale Geschwindigkeit 2 ist
 				)
 
 				self.asteroids.append(Asteroid(pos, vel))
@@ -239,11 +239,36 @@ class Game:
 
 			if self.colCircle(col1, self.player):
 				collision = True
-				print("GAME OVER")  # TODO
+				print("GAME OVER")  # TODO: Game OVer
 
 			for col2 in self.asteroids[:]:
 				if self.colCircle(col1, col2):
 					collision = True
+
+					# TODO: Asteroid explodiert (Sound, Partikel)
+
+					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
+					if col2.size != Asteroid.sizeSmall:
+						for a in range(0, random.randrange(1, 3)):  # Zufällig zwischen 1 und 3 Asteroiden spawnen
+							pos = col2.pos + pygame.Vector2(
+								random.randrange(-col2.size, col2.size),  # Zufälliger Abstand zum vorherigen Asteroiden
+								random.randrange(-col2.size, col2.size)
+							)
+
+							vel = pygame.Vector2(
+								(random.random() - 0.5) * 4,  # Zufällige Geschwindigkeit
+								(random.random() - 0.5) * 4  # * 4, sodass maximale Geschwindigkeit 2 ist
+							)
+
+							size = Asteroid.sizeMedium
+							speedMult = Asteroid.speedMultiplierMedium
+
+							if col2.size == Asteroid.sizeMedium:
+								size = Asteroid.sizeSmall
+								speedMult = Asteroid.speedMultiplierSmall
+
+							self.asteroids.append(Asteroid(pos, vel, size, speedMult))
+
 					self.asteroids.remove(col2)
 					break
 
@@ -263,16 +288,16 @@ class Game:
 		for col1 in self.asteroids[:]:
 			if self.colCircle(col1, self.player):
 				self.asteroids.remove(col1)
-				print("GAME OVER")  # TODO
+				print("GAME OVER")  # TODO: Game Over
 
-		# print(len(self.projectiles))
-		# print(self.player.pos,
-		# 	  self.player.vel,
-		# 	  self.player.acc,
-		# 	  self.pressed_W,
-		# 	  self.pressed_A,
-		# 	  self.pressed_S,
-		# 	  self.pressed_D)
+	# print(len(self.projectiles))
+	# print(self.player.pos,
+	# 	  self.player.vel,
+	# 	  self.player.acc,
+	# 	  self.pressed_W,
+	# 	  self.pressed_A,
+	# 	  self.pressed_S,
+	# 	  self.pressed_D)
 
 	def draw(self, screen):
 		# Spieler zeichnen
