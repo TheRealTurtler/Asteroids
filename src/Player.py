@@ -3,14 +3,14 @@ import pygame
 
 class Player:
 	"""description of class"""
-
 	accMax = 0.4
 
 	# accPerTick = 0.1
 	frictionPerTick = 0.02
 	rotPerTick = 5
 
-	speedMax = 2
+	speedMaxDefault = 2
+	speedMax = speedMaxDefault
 
 	bulletSpawnOffset = 5
 
@@ -21,8 +21,12 @@ class Player:
 		self.rot = 0					 # Rotation
 		self.size = 10
 
-		self.fireRate = 10
+
+		self.fireRateDefault = 10
+		self.fireRate = self.fireRateDefault
 		self.timeLastShot = 0
+
+		self.timeItemStart = 0
 
 		self.pointOffsets = [
 			pygame.Vector2(0, 5),

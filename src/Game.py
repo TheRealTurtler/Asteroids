@@ -5,6 +5,7 @@ from Player import Player
 from Asteroid import Asteroid
 from Projectile import Projectile
 from Sound import Sound
+from PowerUp import PowerUp
 
 
 class Game:
@@ -12,6 +13,9 @@ class Game:
 
 	WHITE = pygame.Color(255, 255, 255)
 	BLACK = pygame.Color(0, 0, 0)
+	GREEN = pygame.Color(0, 255, 0)
+	RED = pygame.Color(255, 0, 0)
+	BLUE = pygame.Color(0, 0, 255)
 
 	def __init__(self, screenSize):
 		if type(screenSize) != tuple:
@@ -40,6 +44,13 @@ class Game:
 		self.projectiles = []
 		self.asteroids = []
 
+		self.item = []
+		self.itemActiveFlag = 0
+		self.upgrade = ["firerate","speed","projectilspeed"]
+
+		self.projSpeedDefault = 2
+		self.projSpeed = self.projSpeedDefault
+
 		self.player = Player()
 
 		self.player.pos = pygame.Vector2(100, 100)
@@ -48,21 +59,24 @@ class Game:
 
 		# Sound Einstellungen
 		laser_wav = r'../resources/laser.wav'  # Laser pew sound lesen
+		asteroid_wav = r'../resources/asteroid3.wav'  # asteriod explosion sound lesen
+		powerup_wav = r'../resources/powerUp1.wav'  # powerUp sound lesen
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
 		self.gunSound = Sound(laser_wav)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
-
+		self.asteroidexpl = Sound(asteroid_wav)
+		self.powerup = Sound(powerup_wav)
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('../resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen
 		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
 
 	def colCircle(self, col1, col2):
-		if type(col1) not in (Player, Asteroid, Projectile):
+		if type(col1) not in (Player, Asteroid, Projectile, PowerUp):
 			raise TypeError
 
-		if type(col2) not in (Player, Asteroid, Projectile):
+		if type(col2) not in (Player, Asteroid, Projectile, PowerUp) :
 			raise TypeError
 
 		if (col2.pos - col1.pos).magnitude() < col1.size + col2.size:
@@ -123,6 +137,14 @@ class Game:
 	# elif event.type == pygame.MOUSEBUTTONDOWN :
 
 	def update(self):
+		# Player item active?
+		if self.itemActiveFlag != 0 and pygame.time.get_ticks() - self.player.timeItemStart > 10000:
+			# return to default values
+			self.player.speedMax = self.player.speedMaxDefault
+			self.player.fireRate = self.player.fireRateDefault
+			self.projSpeed = self.projSpeedDefault
+			self.itemActiveFlag = 0
+
 		# Asteroiden spawnen
 		if len(self.asteroids) == 0:  # Neue Asteroiden spawnen, wenn keine mehr da sind
 			for a in range(0, random.randrange(1, 5)):  # Zufällig zwischen 1 und 5 Asteroiden spawnen
@@ -141,6 +163,22 @@ class Game:
 				)
 
 				self.asteroids.append(Asteroid(pos, vel))
+
+		# PowerUp spawnen
+		if pygame.time.get_ticks() % 1000 == 0 :  # Neues Item spawnen, alle ?????? ms
+
+			pos = self.player.pos
+
+			# Item nicht direkt auf Spieler spawnen
+			while (pos - self.player.pos).magnitude() < PowerUp.size * 4:
+				pos = pygame.Vector2(
+					random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
+					random.randrange(0, self.screenSize[1])
+				)
+
+			effect_idx = random.randrange(0,len(self.upgrade))
+
+			self.item.append(PowerUp(pos, self.upgrade[effect_idx]))
 
 		# Beschleunigung nach gedrückten Tasten festlegen
 		if self.pressed_W and not self.pressed_S:
@@ -191,7 +229,8 @@ class Game:
 				self.projectiles.append(
 					Projectile(
 						pygame.Vector2(self.player.bulletSpawn),
-						pygame.Vector2(self.player.bulletSpawn - self.player.pos)
+						pygame.Vector2(self.player.bulletSpawn - self.player.pos),
+						self.projSpeed
 					)
 				)
 
@@ -244,8 +283,8 @@ class Game:
 			for col2 in self.asteroids[:]:
 				if self.colCircle(col1, col2):
 					collision = True
-
-					# TODO: Asteroid explodiert (Sound, Partikel)
+					self.asteroidexpl.play()
+					# TODO: Asteroid explodiert (Partikel)
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
@@ -290,6 +329,24 @@ class Game:
 				self.asteroids.remove(col1)
 				print("GAME OVER")  # TODO: Game Over
 
+		for col1 in self.item[:]:
+			if self.colCircle(col1, self.player):
+				self.item.remove(col1)
+				if col1.effect == "firerate":
+					self.player.fireRate *= 2
+					self.itemActiveFlag = 1
+					self.player.timeItemStart = pygame.time.get_ticks()
+				elif col1.effect == "speed":
+					self.player.speedMax *= 2
+					self.itemActiveFlag = 1
+					self.player.timeItemStart = pygame.time.get_ticks()
+				elif col1.effect == "projectilspeed":
+					self.projSpeed *= 2
+					self.itemActiveFlag = 1
+					self.player.timeItemStart = pygame.time.get_ticks()
+				else:
+					return NotImplemented
+
 	# print(len(self.projectiles))
 	# print(self.player.pos,
 	# 	  self.player.vel,
@@ -310,3 +367,14 @@ class Game:
 		# Asteroiden zeichnen
 		for a in self.asteroids:
 			a.draw(screen, self.WHITE)
+
+		# Powerups zeichnen
+		for a in self.item:
+			if a.effect == "firerate":
+				a.draw(screen, self.RED)
+			elif a.effect == "speed":
+				a.draw(screen, self.GREEN)
+			elif a.effect == "projectilspeed":
+				a.draw(screen, self.BLUE)
+			else:
+				return NotImplemented
