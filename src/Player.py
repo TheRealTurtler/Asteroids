@@ -1,7 +1,7 @@
 import pygame
 
 
-class Player:
+class Player:		# TODo make player a Spaceobject
 	"""description of class"""
 	accMax = 0.4
 
@@ -89,7 +89,7 @@ class Player:
 		self.bulletSpawn = pygame.Vector2(
 			(self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
 
-	def draw(self, screen, color = pygame.Color(255, 255, 255)):
+	def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 

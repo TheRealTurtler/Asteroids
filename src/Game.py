@@ -163,7 +163,9 @@ class Game:
 					(random.random() - 0.5) * 4  # * 4, sodass maximale Geschwindigkeit 2 ist
 				)
 
-				self.asteroids.append(Asteroid(pos, vel))
+				rotSpeed = random.uniform(-2, 2)
+
+				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
 		if pygame.time.get_ticks() % 1000 == 0 :  # Neues Item spawnen, alle ?????? ms
@@ -303,11 +305,13 @@ class Game:
 							size = Asteroid.sizeMedium
 							speedMult = Asteroid.speedMultiplierMedium
 
+							rotSpeed = random.uniform(-2, 2)
+
 							if col2.size == Asteroid.sizeMedium:
 								size = Asteroid.sizeSmall
 								speedMult = Asteroid.speedMultiplierSmall
 
-							self.asteroids.append(Asteroid(pos, vel, size, speedMult))
+							self.asteroids.append(Asteroid(pos, vel, rotSpeed, size, speedMult))
 
 					self.asteroids.remove(col2)
 					break
@@ -338,7 +342,7 @@ class Game:
 					self.player.fireRate *= 2
 					self.itemActiveFlag = 1
 					self.player.timeItemStart = pygame.time.get_ticks()
-				elif col1.effect == "speed":
+				elif col1.effect == "speed":			# TODO: fix Bug: player faster than projectiles
 					self.player.speedMax *= 2
 					self.itemActiveFlag = 1
 					self.player.timeItemStart = pygame.time.get_ticks()
@@ -360,23 +364,23 @@ class Game:
 
 	def draw(self, screen):
 		# Spieler zeichnen
-		self.player.draw(screen, self.WHITE)
+		self.player.drawPoly(screen, self.WHITE)
 
 		# Projektile zeichnen
 		for p in self.projectiles:
-			p.draw(screen, self.WHITE)
+			p.drawCircle(screen, self.WHITE)
 
 		# Asteroiden zeichnen
 		for a in self.asteroids:
-			a.draw(screen, self.WHITE)
+			a.drawPoly(screen, self.WHITE)
 
 		# Powerups zeichnen
 		for a in self.item:
 			if a.effect == "firerate":
-				a.draw(screen, self.RED)
+				a.drawCircle(screen, self.RED)
 			elif a.effect == "speed":
-				a.draw(screen, self.GREEN)
+				a.drawCircle(screen, self.GREEN)
 			elif a.effect == "projectilspeed":
-				a.draw(screen, self.BLUE)
+				a.drawCircle(screen, self.BLUE)
 			else:
 				return NotImplemented

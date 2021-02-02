@@ -1,24 +1,15 @@
 import pygame
+from Spaceobject import Spaceobject
 
 
-class PowerUp:
+class PowerUp(Spaceobject):
     """description of class"""
 
     size = 10
 
     def __init__(self, pos, effect):
-        self.pos = pos
-
+        super().__init__(pos, pygame.Vector2(0, 0), 0, self.size)
         if type(effect) == str:
             self.effect = effect
         else:
             raise TypeError
-
-    def draw(self, screen, color=pygame.Color(0, 255, 0)):
-        if type(screen) != pygame.Surface:
-            return NotImplemented
-
-        if type(color) != pygame.Color:
-            return NotImplemented
-
-        pygame.draw.circle(screen, color, self.pos, self.size, 1)
