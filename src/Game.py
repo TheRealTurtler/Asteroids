@@ -64,10 +64,9 @@ class Game:
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
-		self.gunSound = Sound(laser_wav)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
-		self.asteroidexpl = Sound(asteroid_wav)
-		self.powerup = Sound(powerup_wav)
-		self.powerup.sound.set_volume(0.3) # powerup sound was to quiet
+		self.gunSound = Sound(laser_wav, 0.03)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
+		self.asteroidexpl = Sound(asteroid_wav, 0.1)
+		self.powerup = Sound(powerup_wav, 0.03)
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('../resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen

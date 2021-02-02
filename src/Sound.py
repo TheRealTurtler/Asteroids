@@ -11,11 +11,11 @@ class Sound:
 
 		# pygame.mixer.set_reserved(4)       #soundchannel reservieren vllt. dann wichtig bei mehreren SFX
 
-	def __init__(self, wav_file):
+	def __init__(self, wav_file, volume):
 		# load the sound file
 		self.wav_file = wav_file
 		self.sound = pygame.mixer.Sound(self.wav_file)
-		self.sound.set_volume(0.03)  # Lautstärke [0..1]
+		self.sound.set_volume(volume)  # Lautstärke [0..1]
 
 	def play(self):
 		# play the sound file for 10 seconds and then stop it
