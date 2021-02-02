@@ -6,6 +6,7 @@ from Asteroid import Asteroid
 from Projectile import Projectile
 from Sound import Sound
 from PowerUp import PowerUp
+from Explosion import Explosion
 
 
 class Game:
@@ -16,6 +17,7 @@ class Game:
 	GREEN = pygame.Color(0, 255, 0)
 	RED = pygame.Color(255, 0, 0)
 	BLUE = pygame.Color(0, 0, 255)
+	YELLOW = pygame.Color(255, 255, 0)
 
 	def __init__(self, screenSize):
 		if type(screenSize) != tuple:
@@ -43,13 +45,17 @@ class Game:
 
 		self.projectiles = []
 		self.asteroids = []
+		self.Explosions = []
 
 		self.item = []
 		self.itemActiveFlag = 0
-		self.upgrade = ["firerate","speed","projectilspeed"]
+		self.upgrade = ["firerate", "speed", "projectilspeed"]
+		self.itemDuration = 10000
 
 		self.projSpeedDefault = 2
 		self.projSpeed = self.projSpeedDefault
+
+		self.expDuration = 1000
 
 		self.player = Player()
 
@@ -138,7 +144,7 @@ class Game:
 
 	def update(self):
 		# Player item active?
-		if self.itemActiveFlag != 0 and pygame.time.get_ticks() - self.player.timeItemStart > 10000:
+		if self.itemActiveFlag != 0 and pygame.time.get_ticks() - self.player.timeItemStart > self.itemDuration:
 			# return to default values
 			self.player.speedMax = self.player.speedMaxDefault
 			self.player.fireRate = self.player.fireRateDefault
@@ -274,6 +280,15 @@ class Game:
 			elif a.pos.y > self.screenSize[1]:
 				a.pos.y = 0
 
+		for e in self.Explosions:
+			# Position aller Explosionen aktualisieren
+			e.update()
+
+			# Lösche Explosion
+			if pygame.time.get_ticks() - e.timeExpStart > self.expDuration:
+				self.Explosions.remove(e)
+
+
 		# Kollision
 		for col1 in self.projectiles[:]:
 			collision = False
@@ -287,6 +302,7 @@ class Game:
 					collision = True
 					self.asteroidexpl.play()
 					# TODO: Asteroid explodiert (Partikel)
+					self.Explosions.append(Explosion(pygame.Vector2(col2.pos)))
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
@@ -374,12 +390,16 @@ class Game:
 			a.drawPoly(screen, self.WHITE)
 
 		# Powerups zeichnen
-		for a in self.item:
-			if a.effect == "firerate":
-				a.drawCircle(screen, self.RED)
-			elif a.effect == "speed":
-				a.drawCircle(screen, self.GREEN)
-			elif a.effect == "projectilspeed":
-				a.drawCircle(screen, self.BLUE)
+		for i in self.item:
+			if i.effect == "firerate":
+				i.drawCircle(screen, self.RED)
+			elif i.effect == "speed":
+				i.drawCircle(screen, self.GREEN)
+			elif i.effect == "projectilspeed":
+				i.drawCircle(screen, self.BLUE)
 			else:
 				return NotImplemented
+
+		# Explosion zeichnen
+		for e in self.Explosions:
+			e.drawExp(screen, self.YELLOW)

@@ -24,11 +24,11 @@ class Spaceobject:
 	def update(self):
 		self.pos += self.dir * self.speed
 
-	def drawCircle(self, screen, color=pygame.Color(0, 255, 0)):
+	def drawCircle(self, screen, color=pygame.Color(255, 255, 255)):
 		if type(screen) != pygame.Surface:
-			return NotImplemented
+			return TypeError
 
 		if type(color) != pygame.Color:
-			return NotImplemented
+			return TypeError
 
 		pygame.draw.circle(screen, color, self.pos, self.size, 1)
