@@ -67,6 +67,7 @@ class Game:
 		self.gunSound = Sound(laser_wav)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
 		self.asteroidexpl = Sound(asteroid_wav)
 		self.powerup = Sound(powerup_wav)
+		self.powerup.sound.set_volume(0.3) # powerup sound was to quiet
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('../resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen
@@ -332,6 +333,7 @@ class Game:
 		for col1 in self.item[:]:
 			if self.colCircle(col1, self.player):
 				self.item.remove(col1)
+				self.powerup.play()
 				if col1.effect == "firerate":
 					self.player.fireRate *= 2
 					self.itemActiveFlag = 1
