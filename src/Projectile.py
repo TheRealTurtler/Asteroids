@@ -1,13 +1,13 @@
 import pygame
-from Spaceobject import Spaceobject
+from SpaceObject import SpaceObject
 
 
-class Projectile(Spaceobject):
+class Projectile(SpaceObject):
 	"""description of class"""
 
-	def __init__(self, pos, direction, speed=2, size=1):
+	def __init__(self, pos, velDir, speed=2, size=1):
 
-		super().__init__(pos, direction, speed, size)
+		super().__init__(pos, velDir, speed, size)
 
 		self.wrap = 0
 		self.maxWrap = 1

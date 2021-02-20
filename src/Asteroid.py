@@ -1,10 +1,10 @@
 import pygame
 import math
 import random
-from Spaceobject import Spaceobject
+from SpaceObject import SpaceObject
 
 
-class Asteroid(Spaceobject):
+class Asteroid(SpaceObject):
     """description of class"""
 
     sizeBig = 60
@@ -39,7 +39,7 @@ class Asteroid(Spaceobject):
         for (idx, offset) in enumerate(self.pointOffsets):
             self.points[idx] = self.pos + offset.rotate(self.rot)
 
-    def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
+    def draw(self, screen, color=pygame.Color(255, 255, 255)):
         if type(screen) != pygame.Surface:
             return NotImplemented
 

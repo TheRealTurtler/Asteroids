@@ -1,7 +1,8 @@
 import pygame
 
+from PowerUp import PowerUp
 
-class Player:		# TODo make player a Spaceobject
+class Player:		# TODO make player a Spaceobject
 	"""description of class"""
 	accMax = 0.4
 
@@ -10,7 +11,8 @@ class Player:		# TODo make player a Spaceobject
 	rotPerTick = 5
 
 	speedMaxDefault = 2
-	speedMax = speedMaxDefault
+	fireRateDefault = 10
+	projSpeedDefault = 2
 
 	bulletSpawnOffset = 5
 
@@ -21,12 +23,12 @@ class Player:		# TODo make player a Spaceobject
 		self.rot = 0					 # Rotation
 		self.size = 10
 
-
-		self.fireRateDefault = 10
+		self.speedMax = self.speedMaxDefault
 		self.fireRate = self.fireRateDefault
 		self.timeLastShot = 0
+		self.projSpeed = self.projSpeedDefault
 
-		self.timeItemStart = 0
+		self.activePowerUps = []
 
 		self.pointOffsets = [
 			pygame.Vector2(0, 5),
@@ -45,7 +47,7 @@ class Player:		# TODo make player a Spaceobject
 		if self.acc.magnitude() > self.accMax:
 			self.acc = self.accMax * self.acc.normalize()
 
-		# Reibung
+		# "Reibung"
 		if self.acc.x == 0:
 			if self.vel.x > 0:
 				self.acc.x = -self.frictionPerTick
@@ -58,27 +60,27 @@ class Player:		# TODo make player a Spaceobject
 			elif self.vel.y < 0:
 				self.acc.y += self.frictionPerTick
 
+		# Untergrenze Beschleunigung
+		if abs(self.acc.x) < 1e-6:
+			self.acc.x = 0
+		if abs(self.acc.y) < 1e-6:
+			self.acc.y = 0
+
 		# Beschleunigung -> Geschwindigkeit
 		self.vel += self.acc
-
-		# Untergrenze Beschleunigung
-		if abs(self.acc.x) < 1e-5:
-			self.acc.x = 0
-		if abs(self.acc.y) < 1e-5:
-			self.acc.y = 0
 
 		# Geschwindigkeit limitieren
 		if self.vel.magnitude() > self.speedMax:
 			self.vel = self.speedMax * self.vel.normalize()
-
-		# Geschwindigkeit -> Position
-		self.pos += self.vel
 
 		# Untergrenze Geschwindigleit
 		if abs(self.vel.x) < self.frictionPerTick:
 			self.vel.x = 0
 		if abs(self.vel.y) < self.frictionPerTick:
 			self.vel.y = 0
+
+		# Geschwindigkeit -> Position
+		self.pos += self.vel
 
 		# Rotation
 		self.rot %= 360
@@ -89,7 +91,22 @@ class Player:		# TODo make player a Spaceobject
 		self.bulletSpawn = pygame.Vector2(
 			(self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
 
-	def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
+		# PowerUp-Effekte
+		for p in self.activePowerUps[:]:
+			# PowerUps nach Ablauf löschen
+			if pygame.time.get_ticks() - p.collectionTime > p.duration:
+				if p.id == 0:			# Feuerrate
+					self.fireRate -= Player.fireRateDefault
+				elif p.id == 1:			# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+					self.speedMax -= Player.speedMaxDefault
+				elif p.id == 2:			# Projektil-Geschwindigkeit
+					self.projSpeed -= Player.projSpeedDefault
+				else:
+					raise LookupError
+
+				self.activePowerUps.remove(p)
+
+	def draw(self, screen, color=pygame.Color(255, 255, 255)):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
@@ -98,3 +115,21 @@ class Player:		# TODo make player a Spaceobject
 
 		pygame.draw.polygon(screen, color, self.points, 1)
 		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
+
+	def collectPowerUp(self, powerUp):
+		if type(powerUp) != PowerUp:
+			raise TypeError
+
+		self.activePowerUps.append(powerUp)
+
+		if powerUp.id == 0:			# Feuerrate
+			self.fireRate += Player.fireRateDefault
+		elif powerUp.id == 1:		# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+			self.speedMax += Player.speedMaxDefault
+		elif powerUp.id == 2:		# Projektil-Geschwindigkeit
+			self.projSpeed += Player.projSpeedDefault
+		else:
+			raise LookupError
+
+		print("PowerUp collected!")
+		print(powerUp.collectionTime)

@@ -1,43 +1,45 @@
 import pygame
 import random
-from Spaceobject import Spaceobject
-from Projectile import Projectile
+from SpaceObject import SpaceObject
+from Particle import Particle
 
 
-class Explosion(Spaceobject):
+class Explosion(SpaceObject):
 
 	def __init__(self, pos):
 
 		# Definiert Ursprung der Explosion
-		super().__init__(pos,  pygame.Vector2(0, 0), 0, 1)
+		super().__init__(pos)
 
-		self.timeExpStart = pygame.time.get_ticks()
-
-		self.sizeTeilchen = 1
-		self.speedTeilchen = 1
-		self.teilchen = []
+		self.particles = []
 
 		for x in range(random.randint(5, 20)):
 
-			directionTeilchen = pygame.Vector2(
+			particleDir = pygame.Vector2(
 				(random.random() - 0.5),		# Zufällige Richtung
 				(random.random() - 0.5)
 			)
 
-			self.teilchen.append(
-				Spaceobject(pygame.Vector2(pos), directionTeilchen, self.speedTeilchen, self.sizeTeilchen)
+			particleSize = random.randrange(1, 3)		# Zufällige Größe für Partikel
+			particleSpeed = random.randrange(1, 4)		# Zufällige Geschwindigkeit für Partikel
+			particleColor = pygame.Color(255, random.randrange(0, 256), 0)		# Farbe zwischen rot und gelb
+
+			self.particles.append(
+				Particle(pygame.Vector2(pos), particleDir, particleSpeed, particleSize, particleColor)
 			)
 
 	def update(self):
-		for t in self.teilchen:
-			t.pos += t.dir * t.speed
+		for p in self.particles[:]:
+			p.update()
 
-	def drawExp(self, screen, color=pygame.Color(255, 255, 255)):
+			# Partikel löschen, wenn stehen geblieben
+			if p.speed == 0:
+				self.particles.remove(p)
+
+
+	def draw(self, screen):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
-		if type(color) != pygame.Color:
-			return TypeError
-
-		for t in self.teilchen:
-			pygame.draw.circle(screen, color, t.pos, t.size, 1)
+		for p in self.particles:
+			p.draw(screen)
