@@ -1,7 +1,10 @@
 import pygame
+import math
+import random
+from Spaceobject import Spaceobject
 
 
-class Asteroid:
+class Asteroid(Spaceobject):
     """description of class"""
 
     sizeBig = 60
@@ -12,20 +15,35 @@ class Asteroid:
     speedMultiplierMedium = 1.5
     speedMultiplierSmall = 2
 
-    def __init__(self, pos, vel = pygame.Vector2(0, 0), size = sizeBig, speedMultiplier = speedMultiplierBig):
-        self.pos = pos
-        self.vel = vel * speedMultiplier
-        self.size = size
+    numPoints = 20
+
+    def __init__(self, pos, vel=pygame.Vector2(0, 0), rotSpeed=1, size=sizeBig, speedMultiplier=speedMultiplierBig):
+        super().__init__(pos, vel, speedMultiplier, size)
         self.rot = 0
+        self.rotSpeed = rotSpeed
+        self.pointOffsets = [pygame.Vector2(
+            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.cos((2 * math.pi * x) / self.numPoints),
+            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.sin((2 * math.pi * x) / self.numPoints)
+        ) for x in range(self.numPoints)]
+
+        self.points = [pygame.Vector2(0,0) for offset in self.pointOffsets]
 
     def update(self):
-        self.pos += self.vel
+        super().update()
 
-    def draw(self, screen, color=pygame.Color(255, 255, 255)):
+        self.rot += self.rotSpeed
+
+        # Rotation
+        self.rot %= 360
+
+        for (idx, offset) in enumerate(self.pointOffsets):
+            self.points[idx] = self.pos + offset.rotate(self.rot)
+
+    def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
         if type(screen) != pygame.Surface:
             return NotImplemented
 
         if type(color) != pygame.Color:
             return NotImplemented
 
-        pygame.draw.circle(screen, color, self.pos, self.size, 1)
+        pygame.draw.polygon(screen, color, self.points, 1)
