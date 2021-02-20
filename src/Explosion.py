@@ -11,8 +11,6 @@ class Explosion(SpaceObject):
 		# Definiert Ursprung der Explosion
 		super().__init__(pos)
 
-		self.explosionCreationTime = pygame.time.get_ticks()
-
 		self.particles = []
 
 		for x in range(random.randint(5, 20)):
@@ -31,8 +29,13 @@ class Explosion(SpaceObject):
 			)
 
 	def update(self):
-		for p in self.particles:
-			p.pos += p.dir * p.speed
+		for p in self.particles[:]:
+			p.update()
+
+			# Partikel löschen, wenn stehen geblieben
+			if p.speed == 0:
+				self.particles.remove(p)
+
 
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:

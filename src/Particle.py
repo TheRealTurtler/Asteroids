@@ -1,16 +1,24 @@
 import pygame
-import random
 
 from SpaceObject import SpaceObject
 
 
 class Particle(SpaceObject):
-    def __init__(self, pos, direction = pygame.Vector2(0, 0), speed = 0, size = 1, color = pygame.Color(255, 255, 255)):
-        super().__init__(pos, direction, speed, size)
+    def __init__(self, pos, velDir = pygame.Vector2(0, 0), speed = 0, size = 1, color = pygame.Color(255, 255, 255)):
+        super().__init__(pos, velDir, speed, size)
 
         self.color = color
 
-        self.particleCreationTime = pygame.time.get_ticks()
+        self.friction = 0.05
+
+    def update(self):
+        if self.speed < self.friction:
+            self.speed = 0
+
+        if self.speed > 0:
+            self.speed -= self.friction
+
+        super().update()
 
     def draw(self, screen):
         if type(screen) != pygame.Surface:

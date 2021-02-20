@@ -1,7 +1,7 @@
 import pygame
 
 
-class Player:		# TODo make player a Spaceobject
+class Player:		# TODO make player a Spaceobject
 	"""description of class"""
 	accMax = 0.4
 
@@ -45,7 +45,7 @@ class Player:		# TODo make player a Spaceobject
 		if self.acc.magnitude() > self.accMax:
 			self.acc = self.accMax * self.acc.normalize()
 
-		# Reibung
+		# "Reibung"
 		if self.acc.x == 0:
 			if self.vel.x > 0:
 				self.acc.x = -self.frictionPerTick
@@ -62,9 +62,9 @@ class Player:		# TODo make player a Spaceobject
 		self.vel += self.acc
 
 		# Untergrenze Beschleunigung
-		if abs(self.acc.x) < 1e-5:
+		if abs(self.acc.x) < 1e-6:
 			self.acc.x = 0
-		if abs(self.acc.y) < 1e-5:
+		if abs(self.acc.y) < 1e-6:
 			self.acc.y = 0
 
 		# Geschwindigkeit limitieren

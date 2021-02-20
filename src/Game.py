@@ -286,7 +286,7 @@ class Game:
 			e.update()
 
 			# Lösche Explosion
-			if pygame.time.get_ticks() - e.explosionCreationTime > self.expDuration:
+			if len(e.particles) == 0:
 				self.Explosions.remove(e)
 
 
