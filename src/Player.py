@@ -1,5 +1,6 @@
 import pygame
 
+from PowerUp import PowerUp
 
 class Player:		# TODO make player a Spaceobject
 	"""description of class"""
@@ -10,7 +11,8 @@ class Player:		# TODO make player a Spaceobject
 	rotPerTick = 5
 
 	speedMaxDefault = 2
-	speedMax = speedMaxDefault
+	fireRateDefault = 10
+	projSpeedDefault = 2
 
 	bulletSpawnOffset = 5
 
@@ -21,12 +23,12 @@ class Player:		# TODO make player a Spaceobject
 		self.rot = 0					 # Rotation
 		self.size = 10
 
-
-		self.fireRateDefault = 10
+		self.speedMax = self.speedMaxDefault
 		self.fireRate = self.fireRateDefault
 		self.timeLastShot = 0
+		self.projSpeed = self.projSpeedDefault
 
-		self.timeItemStart = 0
+		self.activePowerUps = []
 
 		self.pointOffsets = [
 			pygame.Vector2(0, 5),
@@ -89,7 +91,22 @@ class Player:		# TODO make player a Spaceobject
 		self.bulletSpawn = pygame.Vector2(
 			(self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
 
-	def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
+		# PowerUp-Effekte
+		for p in self.activePowerUps[:]:
+			# PowerUps nach Ablauf löschen
+			if pygame.time.get_ticks() - p.collectionTime > p.duration:
+				if p.id == 0:			# Feuerrate
+					self.fireRate -= Player.fireRateDefault
+				elif p.id == 1:			# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+					self.speedMax -= Player.speedMaxDefault
+				elif p.id == 2:			# Projektil-Geschwindigkeit
+					self.projSpeed -= Player.projSpeedDefault
+				else:
+					raise LookupError
+
+				self.activePowerUps.remove(p)
+
+	def draw(self, screen, color=pygame.Color(255, 255, 255)):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
@@ -98,3 +115,21 @@ class Player:		# TODO make player a Spaceobject
 
 		pygame.draw.polygon(screen, color, self.points, 1)
 		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
+
+	def collectPowerUp(self, powerUp):
+		if type(powerUp) != PowerUp:
+			raise TypeError
+
+		self.activePowerUps.append(powerUp)
+
+		if powerUp.id == 0:			# Feuerrate
+			self.fireRate += Player.fireRateDefault
+		elif powerUp.id == 1:		# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+			self.speedMax += Player.speedMaxDefault
+		elif powerUp.id == 2:		# Projektil-Geschwindigkeit
+			self.projSpeed += Player.projSpeedDefault
+		else:
+			raise LookupError
+
+		print("PowerUp collected!")
+		print(powerUp.collectionTime)

@@ -39,7 +39,7 @@ class Asteroid(SpaceObject):
         for (idx, offset) in enumerate(self.pointOffsets):
             self.points[idx] = self.pos + offset.rotate(self.rot)
 
-    def drawPoly(self, screen, color=pygame.Color(255, 255, 255)):
+    def draw(self, screen, color=pygame.Color(255, 255, 255)):
         if type(screen) != pygame.Surface:
             return NotImplemented
 
