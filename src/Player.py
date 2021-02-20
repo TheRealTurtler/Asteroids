@@ -58,27 +58,27 @@ class Player:		# TODO make player a Spaceobject
 			elif self.vel.y < 0:
 				self.acc.y += self.frictionPerTick
 
-		# Beschleunigung -> Geschwindigkeit
-		self.vel += self.acc
-
 		# Untergrenze Beschleunigung
 		if abs(self.acc.x) < 1e-6:
 			self.acc.x = 0
 		if abs(self.acc.y) < 1e-6:
 			self.acc.y = 0
 
+		# Beschleunigung -> Geschwindigkeit
+		self.vel += self.acc
+
 		# Geschwindigkeit limitieren
 		if self.vel.magnitude() > self.speedMax:
 			self.vel = self.speedMax * self.vel.normalize()
-
-		# Geschwindigkeit -> Position
-		self.pos += self.vel
 
 		# Untergrenze Geschwindigleit
 		if abs(self.vel.x) < self.frictionPerTick:
 			self.vel.x = 0
 		if abs(self.vel.y) < self.frictionPerTick:
 			self.vel.y = 0
+
+		# Geschwindigkeit -> Position
+		self.pos += self.vel
 
 		# Rotation
 		self.rot %= 360
