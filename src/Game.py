@@ -227,6 +227,7 @@ class Game:
 
 		# Projektile
 		if self.pressed_Space:
+			# Feuerrate begrenzen
 			if pygame.time.get_ticks() - self.player.timeLastShot > 1000 / self.player.fireRate:
 				self.player.timeLastShot = pygame.time.get_ticks()
 
@@ -285,7 +286,7 @@ class Game:
 			e.update()
 
 			# Lösche Explosion
-			if pygame.time.get_ticks() - e.timeExpStart > self.expDuration:
+			if pygame.time.get_ticks() - e.explosionCreationTime > self.expDuration:
 				self.Explosions.remove(e)
 
 
@@ -295,11 +296,12 @@ class Game:
 
 			if self.colCircle(col1, self.player):
 				collision = True
-				print("GAME OVER")  # TODO: Game OVer
+				print("GAME OVER")  # TODO: Game Over
 
 			for col2 in self.asteroids[:]:
 				if self.colCircle(col1, col2):
 					collision = True
+					self.asteroidexpl.stop()
 					self.asteroidexpl.play()
 					# TODO: Asteroid explodiert (Partikel)
 					self.Explosions.append(Explosion(pygame.Vector2(col2.pos)))
@@ -328,6 +330,7 @@ class Game:
 
 							self.asteroids.append(Asteroid(pos, vel, rotSpeed, size, speedMult))
 
+					col2.hit = True
 					self.asteroids.remove(col2)
 					break
 
@@ -342,26 +345,25 @@ class Game:
 
 			if collision:
 				self.projectiles.remove(col1)
-				continue
 
-		for col1 in self.asteroids[:]:
-			if self.colCircle(col1, self.player):
-				self.asteroids.remove(col1)
+		for col in self.asteroids[:]:
+			if self.colCircle(col, self.player):
+				self.asteroids.remove(col)
 				print("GAME OVER")  # TODO: Game Over
 
-		for col1 in self.item[:]:
-			if self.colCircle(col1, self.player):
-				self.item.remove(col1)
+		for col in self.item[:]:
+			if self.colCircle(col, self.player):
+				self.item.remove(col)
 				self.powerup.play()
-				if col1.effect == "firerate":
+				if col.effect == "firerate":
 					self.player.fireRate *= 2
 					self.itemActiveFlag = 1
 					self.player.timeItemStart = pygame.time.get_ticks()
-				elif col1.effect == "speed":			# TODO: fix Bug: player faster than projectiles
+				elif col.effect == "speed":			# TODO: fix Bug: player faster than projectiles
 					self.player.speedMax *= 2
 					self.itemActiveFlag = 1
 					self.player.timeItemStart = pygame.time.get_ticks()
-				elif col1.effect == "projectilspeed":
+				elif col.effect == "projectilspeed":
 					self.projSpeed *= 2
 					self.itemActiveFlag = 1
 					self.player.timeItemStart = pygame.time.get_ticks()
@@ -383,7 +385,7 @@ class Game:
 
 		# Projektile zeichnen
 		for p in self.projectiles:
-			p.drawCircle(screen, self.WHITE)
+			p.draw(screen, self.WHITE)
 
 		# Asteroiden zeichnen
 		for a in self.asteroids:
@@ -392,14 +394,14 @@ class Game:
 		# Powerups zeichnen
 		for i in self.item:
 			if i.effect == "firerate":
-				i.drawCircle(screen, self.RED)
+				i.draw(screen, self.RED)
 			elif i.effect == "speed":
-				i.drawCircle(screen, self.GREEN)
+				i.draw(screen, self.GREEN)
 			elif i.effect == "projectilspeed":
-				i.drawCircle(screen, self.BLUE)
+				i.draw(screen, self.BLUE)
 			else:
 				return NotImplemented
 
 		# Explosion zeichnen
 		for e in self.Explosions:
-			e.drawExp(screen, self.YELLOW)
+			e.draw(screen)

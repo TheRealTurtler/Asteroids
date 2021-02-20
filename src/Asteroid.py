@@ -1,10 +1,10 @@
 import pygame
 import math
 import random
-from Spaceobject import Spaceobject
+from SpaceObject import SpaceObject
 
 
-class Asteroid(Spaceobject):
+class Asteroid(SpaceObject):
     """description of class"""
 
     sizeBig = 60

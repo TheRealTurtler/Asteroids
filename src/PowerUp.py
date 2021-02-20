@@ -1,8 +1,8 @@
 import pygame
-from Spaceobject import Spaceobject
+from SpaceObject import SpaceObject
 
 
-class PowerUp(Spaceobject):
+class PowerUp(SpaceObject):
     """description of class"""
 
     size = 10

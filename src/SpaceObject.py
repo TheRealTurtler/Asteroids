@@ -1,9 +1,9 @@
 import pygame
 
 
-class Spaceobject:
+class SpaceObject:
 
-	def __init__(self, pos, direction, speed, size):
+	def __init__(self, pos, direction = pygame.Vector2(0, 0), speed = 0, size = 1):
 		if type(pos) != pygame.Vector2:
 			raise TypeError
 
@@ -24,11 +24,11 @@ class Spaceobject:
 	def update(self):
 		self.pos += self.dir * self.speed
 
-	def drawCircle(self, screen, color=pygame.Color(255, 255, 255)):
+	def draw(self, screen, color=pygame.Color(255, 255, 255)):
 		if type(screen) != pygame.Surface:
 			return TypeError
 
 		if type(color) != pygame.Color:
 			return TypeError
 
-		pygame.draw.circle(screen, color, self.pos, self.size, 1)
+		pygame.draw.circle(screen, color, self.pos, self.size)

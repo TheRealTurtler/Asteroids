@@ -1,8 +1,8 @@
 import pygame
-from Spaceobject import Spaceobject
+from SpaceObject import SpaceObject
 
 
-class Projectile(Spaceobject):
+class Projectile(SpaceObject):
 	"""description of class"""
 
 	def __init__(self, pos, direction, speed=2, size=1):
