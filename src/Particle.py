@@ -16,4 +16,4 @@ class Particle(SpaceObject):
         if type(screen) != pygame.Surface:
             raise TypeError
 
-        pygame.draw.circle(screen, self.color, self.pos, self.size, 1)
+        pygame.draw.circle(screen, self.color, self.pos, self.size)

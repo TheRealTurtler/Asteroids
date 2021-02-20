@@ -13,8 +13,6 @@ class Explosion(SpaceObject):
 
 		self.explosionCreationTime = pygame.time.get_ticks()
 
-		self.particleSize = 1
-		self.particleSpeed = 1
 		self.particles = []
 
 		for x in range(random.randint(5, 20)):
@@ -24,10 +22,12 @@ class Explosion(SpaceObject):
 				(random.random() - 0.5)
 			)
 
-			particleColor = pygame.Color(255, random.randrange(0, 256), 0)
+			particleSize = random.randrange(1, 3)		# Zufällige Größe für Partikel
+			particleSpeed = random.randrange(1, 4)		# Zufällige Geschwindigkeit für Partikel
+			particleColor = pygame.Color(255, random.randrange(0, 256), 0)		# Farbe zwischen rot und gelb
 
 			self.particles.append(
-				Particle(pygame.Vector2(pos), particleDir, self.particleSpeed, self.particleSize, particleColor)
+				Particle(pygame.Vector2(pos), particleDir, particleSpeed, particleSize, particleColor)
 			)
 
 	def update(self):
