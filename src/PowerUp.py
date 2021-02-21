@@ -6,7 +6,7 @@ class PowerUp(SpaceObject):
 	"""description of class"""
 
 	size = 10
-	availablePowerUps = 3
+	availablePowerUps = 4
 	spawnDelay = 10000
 
 	def __init__(self, pos, id):
@@ -35,5 +35,9 @@ class PowerUp(SpaceObject):
 			color = pygame.Color(0, 255, 0)
 		elif self.id == 2:		# Projektil-Geschwindigkeit
 			color = pygame.Color(0, 0, 255)
+		elif self.id == 3:		# Multi-Schuss
+			color = pygame.Color(255, 127, 0)
+		else:
+			raise LookupError
 
-		pygame.draw.circle(screen, color, self.pos, self.size, 1)
+		pygame.draw.circle(screen, color, self.pos, self.size)
