@@ -179,6 +179,7 @@ class Game:
 				)
 
 			self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
+			# self.collectablePowerUps.append(PowerUp(pos, 3))
 
 		# Beschleunigung nach gedrückten Tasten festlegen
 		if self.pressed_W and not self.pressed_S:
@@ -227,13 +228,14 @@ class Game:
 				self.soundLaser.play()
 
 				# Neues Projektil zur Liste hinzufügen
-				self.projectiles.append(
-					Projectile(
-						pygame.Vector2(self.player.bulletSpawn),
-						pygame.Vector2(self.player.bulletSpawn - self.player.pos),
-						self.player.projSpeed
+				for sp in self.player.bulletSpawnPoints:
+					self.projectiles.append(
+						Projectile(
+							pygame.Vector2(sp),
+							pygame.Vector2(self.player.lookDir),
+							self.player.projSpeed
+						)
 					)
-				)
 
 		for p in self.projectiles[:]:
 			# Positionen aller Projektile aktualisieren
@@ -288,6 +290,9 @@ class Game:
 			# Kugel - Spieler
 			if self.colCircle(col1, self.player):
 				collision = True
+				self.soundExplosion.stop()  # Sound anhalten (falls bereits aktiv)
+				self.soundExplosion.play()  # Sound abspielen
+				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
 				print("GAME OVER")  # TODO: Game Over
 
 			# Kugel - Asteroid
@@ -341,6 +346,10 @@ class Game:
 		# Asteroid - Spieler
 		for col in self.asteroids[:]:
 			if self.colCircle(col, self.player):
+				self.soundExplosion.stop()  # Sound anhalten (falls bereits aktiv)
+				self.soundExplosion.play()  # Sound abspielen
+				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
+				self.explosions.append(Explosion(pygame.Vector2(col.pos)))
 				self.asteroids.remove(col)
 				print("GAME OVER")  # TODO: Game Over
 

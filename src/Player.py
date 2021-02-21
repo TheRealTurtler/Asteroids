@@ -22,6 +22,7 @@ class Player:		# TODO make player a Spaceobject
 		self.acc = pygame.Vector2(0, 0)  # Beschleunigung
 		self.rot = 0					 # Rotation
 		self.size = 10
+		self.lookDir = pygame.Vector2(0, 1)		# Blickrichtung
 
 		self.speedMax = self.speedMaxDefault
 		self.fireRate = self.fireRateDefault
@@ -37,10 +38,10 @@ class Player:		# TODO make player a Spaceobject
 			pygame.Vector2(5, -10)
 		]
 
-		self.points = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
+		self.polygonPoints = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
 
-		self.bulletSpawn = pygame.Vector2(
-			(self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
+		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]
+		self.bulletAmount = 1
 
 	def update(self):
 		# Beschleunigung limitieren
@@ -86,13 +87,34 @@ class Player:		# TODO make player a Spaceobject
 		self.rot %= 360
 
 		for (idx, offset) in enumerate(self.pointOffsets):
-			self.points[idx] = self.pos + offset.rotate(self.rot)
+			self.polygonPoints[idx] = self.pos + offset.rotate(self.rot)
 
-		self.bulletSpawn = pygame.Vector2(
-			(self.points[0] - self.pos).normalize() * self.bulletSpawnOffset + self.points[0])
+		self.bulletSpawnPoints = []
+		self.lookDir = (self.polygonPoints[0] - self.pos).normalize()
+
+		bulletStartPos = 1
+
+		# ungerade Anzahl Kugeln
+		if self.bulletAmount % 2:
+			bulletStartPos = 0
+
+		for b in range(bulletStartPos, self.bulletAmount, 2):
+			self.bulletSpawnPoints.append(
+				self.lookDir * self.bulletSpawnOffset
+				+ self.polygonPoints[0]
+				+ pygame.Vector2(self.lookDir.y, -self.lookDir.x) * self.bulletSpawnOffset * b
+			)
+
+			if b > 0:
+				self.bulletSpawnPoints.append(
+					self.lookDir * self.bulletSpawnOffset
+					+ self.polygonPoints[0]
+					+ pygame.Vector2(-self.lookDir.y, self.lookDir.x) * self.bulletSpawnOffset * b
+				)
 
 		# PowerUp-Effekte
 		for p in self.activePowerUps[:]:
+
 			# PowerUps nach Ablauf löschen
 			if pygame.time.get_ticks() - p.collectionTime > p.duration:
 				if p.id == 0:			# Feuerrate
@@ -101,8 +123,8 @@ class Player:		# TODO make player a Spaceobject
 					self.speedMax -= Player.speedMaxDefault
 				elif p.id == 2:			# Projektil-Geschwindigkeit
 					self.projSpeed -= Player.projSpeedDefault
-				else:
-					raise LookupError
+				elif p.id == 3:  # Multi-Schuss
+					self.bulletAmount -= 1
 
 				self.activePowerUps.remove(p)
 
@@ -113,7 +135,7 @@ class Player:		# TODO make player a Spaceobject
 		if type(color) != pygame.Color:
 			raise TypeError
 
-		pygame.draw.polygon(screen, color, self.points, 1)
+		pygame.draw.polygon(screen, color, self.polygonPoints, 1)
 		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
 
 	def collectPowerUp(self, powerUp):
@@ -128,8 +150,5 @@ class Player:		# TODO make player a Spaceobject
 			self.speedMax += Player.speedMaxDefault
 		elif powerUp.id == 2:		# Projektil-Geschwindigkeit
 			self.projSpeed += Player.projSpeedDefault
-		else:
-			raise LookupError
-
-		print("PowerUp collected!")
-		print(powerUp.collectionTime)
+		elif powerUp.id == 3:		# Multi-Schuss
+			self.bulletAmount += 1
