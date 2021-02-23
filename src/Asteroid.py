@@ -46,7 +46,7 @@ class Asteroid(SpaceObject):
             (self.size + self.size * random.uniform(-0.2, 0.2)) * math.sin((2 * math.pi * x) / Asteroid.polygonPointsCount)
         ) for x in range(self.polygonPointsCount)]
 
-        self.points = [pygame.Vector2(0,0) for offset in self.pointOffsets]
+        self.polygonPoints = [pygame.Vector2(0, 0) for offset in self.polygonPointsOffsets]
 
     def update(self):
         super().update()
