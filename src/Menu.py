@@ -50,6 +50,10 @@ class Menu:
 	def reload(self):
 		self.active = True
 		self.selection = -1
+		self.eventHandler.pressed_M_Left = False
+		self.eventHandler.pressed_M_Pos = ()
+		self.eventHandler.released_M_Left = False
+		self.eventHandler.released_M_Pos = ()
 
 	def update(self):
 		# TODO: button highlighting (hover)
