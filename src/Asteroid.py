@@ -15,18 +15,38 @@ class Asteroid(SpaceObject):
     speedMultiplierMedium = 1.5
     speedMultiplierSmall = 2
 
-    numPoints = 20
+    polygonPointsCount = 20
 
-    def __init__(self, pos, vel=pygame.Vector2(0, 0), rotSpeed=1, size=sizeBig, speedMultiplier=speedMultiplierBig):
+    scorePointsBig = 20
+    scorePointsMedium = 50
+    scorePointsSmall = 100
+
+    def __init__(self, pos, vel=pygame.Vector2(0, 0), rotSpeed = 1, size = sizeBig):
+        self.scorePoints = 0
+        speedMultiplier = 1
+
+        if size == Asteroid.sizeBig:
+            self.scorePoints = Asteroid.scorePointsBig
+            speedMultiplier = Asteroid.speedMultiplierBig
+        elif size == Asteroid.sizeMedium:
+            self.scorePoints = Asteroid.scorePointsMedium
+            speedMultiplier = Asteroid.speedMultiplierMedium
+        elif size == Asteroid.sizeSmall:
+            self.scorePoints = Asteroid.scorePointsSmall
+            speedMultiplier = Asteroid.speedMultiplierSmall
+        else:
+            raise LookupError
+
         super().__init__(pos, vel, speedMultiplier, size)
+
         self.rot = 0
         self.rotSpeed = rotSpeed
-        self.pointOffsets = [pygame.Vector2(
-            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.cos((2 * math.pi * x) / self.numPoints),
-            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.sin((2 * math.pi * x) / self.numPoints)
-        ) for x in range(self.numPoints)]
+        self.polygonPointsOffsets = [pygame.Vector2(
+            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.cos((2 * math.pi * x) / Asteroid.polygonPointsCount),
+            (self.size + self.size * random.uniform(-0.2, 0.2)) * math.sin((2 * math.pi * x) / Asteroid.polygonPointsCount)
+        ) for x in range(self.polygonPointsCount)]
 
-        self.points = [pygame.Vector2(0,0) for offset in self.pointOffsets]
+        self.polygonPoints = [pygame.Vector2(0, 0) for offset in self.polygonPointsOffsets]
 
     def update(self):
         super().update()
@@ -36,14 +56,14 @@ class Asteroid(SpaceObject):
         # Rotation
         self.rot %= 360
 
-        for (idx, offset) in enumerate(self.pointOffsets):
-            self.points[idx] = self.pos + offset.rotate(self.rot)
+        for (idx, offset) in enumerate(self.polygonPointsOffsets):
+            self.polygonPoints[idx] = self.pos + offset.rotate(self.rot)
 
-    def draw(self, screen, color=pygame.Color(255, 255, 255)):
+    def draw(self, screen, color = pygame.Color(255, 255, 255)):
         if type(screen) != pygame.Surface:
-            return NotImplemented
+            raise TypeError
 
         if type(color) != pygame.Color:
-            return NotImplemented
+            raise TypeError
 
-        pygame.draw.polygon(screen, color, self.points, 1)
+        pygame.draw.polygon(screen, color, self.polygonPoints, 1)

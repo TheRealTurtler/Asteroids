@@ -1,5 +1,7 @@
 import pygame
+
 from SpaceObject import SpaceObject
+from Color import Color
 
 
 class PowerUp(SpaceObject):
@@ -8,6 +10,12 @@ class PowerUp(SpaceObject):
 	size = 10
 	availablePowerUps = 4
 	spawnDelay = 10000
+
+	class PowerUpIDs:
+		fireRate = 0
+		maxSpeed = 1
+		projectileSpeed = 2
+		multiShot = 3
 
 	def __init__(self, pos, id):
 		if type(id) == int:
@@ -29,14 +37,14 @@ class PowerUp(SpaceObject):
 
 		color = pygame.Color(255, 255, 255)
 
-		if self.id == 0:		# Feuerrate
-			color = pygame.Color(255, 0, 0)
-		elif self.id == 1:		# Maximalgeschwindigkeit Spieler
-			color = pygame.Color(0, 255, 0)
-		elif self.id == 2:		# Projektil-Geschwindigkeit
-			color = pygame.Color(0, 0, 255)
-		elif self.id == 3:		# Multi-Schuss
-			color = pygame.Color(255, 127, 0)
+		if self.id == PowerUp.PowerUpIDs.fireRate:					# Feuerrate
+			color = Color.RED
+		elif self.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler
+			color = Color.GREEN
+		elif self.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
+			color = Color.BLUE
+		elif self.id == PowerUp.PowerUpIDs.multiShot:				# Multi-Schuss
+			color = Color.ORANGE
 		else:
 			raise LookupError
 

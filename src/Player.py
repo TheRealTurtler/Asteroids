@@ -43,6 +43,9 @@ class Player:		# TODO make player a Spaceobject
 		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]
 		self.bulletAmount = 1
 
+		self.score = 0
+		self.lives = 5
+
 	def update(self):
 		# Beschleunigung limitieren
 		if self.acc.magnitude() > self.accMax:
@@ -117,13 +120,13 @@ class Player:		# TODO make player a Spaceobject
 
 			# PowerUps nach Ablauf löschen
 			if pygame.time.get_ticks() - p.collectionTime > p.duration:
-				if p.id == 0:			# Feuerrate
+				if p.id == PowerUp.PowerUpIDs.fireRate:					# Feuerrate
 					self.fireRate -= Player.fireRateDefault
-				elif p.id == 1:			# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+				elif p.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
 					self.speedMax -= Player.speedMaxDefault
-				elif p.id == 2:			# Projektil-Geschwindigkeit
+				elif p.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
 					self.projSpeed -= Player.projSpeedDefault
-				elif p.id == 3:  # Multi-Schuss
+				elif p.id == PowerUp.PowerUpIDs.multiShot:				# Multi-Schuss
 					self.bulletAmount -= 1
 
 				self.activePowerUps.remove(p)
@@ -144,11 +147,11 @@ class Player:		# TODO make player a Spaceobject
 
 		self.activePowerUps.append(powerUp)
 
-		if powerUp.id == 0:			# Feuerrate
+		if powerUp.id == PowerUp.PowerUpIDs.fireRate:				# Feuerrate
 			self.fireRate += Player.fireRateDefault
-		elif powerUp.id == 1:		# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+		elif powerUp.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
 			self.speedMax += Player.speedMaxDefault
-		elif powerUp.id == 2:		# Projektil-Geschwindigkeit
+		elif powerUp.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
 			self.projSpeed += Player.projSpeedDefault
-		elif powerUp.id == 3:		# Multi-Schuss
+		elif powerUp.id == PowerUp.PowerUpIDs.multiShot:			# Multi-Schuss
 			self.bulletAmount += 1
