@@ -1,6 +1,7 @@
 import pygame
 
 from Game import Game
+from Color import Color
 
 pygame.init()
 
@@ -24,7 +25,7 @@ while game.gameActive:
 	game.update()
 
 	# Spielfeld löschen
-	screen.fill(game.BLACK)
+	screen.fill(Color.BLACK)
 
 	# Rendern
 	game.draw(screen)

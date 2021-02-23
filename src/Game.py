@@ -7,18 +7,11 @@ from Projectile import Projectile
 from Sound import Sound
 from PowerUp import PowerUp
 from Explosion import Explosion
+from Color import Color
+from Text import Text
 
 
 class Game:
-	"""description of class"""
-
-	WHITE = pygame.Color(255, 255, 255)
-	BLACK = pygame.Color(0, 0, 0)
-	GREEN = pygame.Color(0, 255, 0)
-	RED = pygame.Color(255, 0, 0)
-	BLUE = pygame.Color(0, 0, 255)
-	YELLOW = pygame.Color(255, 255, 0)
-
 	def __init__(self, screenSize):
 		if type(screenSize) != tuple:
 			raise TypeError
@@ -46,6 +39,7 @@ class Game:
 		self.projectiles = []
 		self.asteroids = []
 		self.explosions = []
+		self.ui = []
 
 		self.collectablePowerUps = []
 		self.lastPowerUpSpawnTime = 0
@@ -60,7 +54,7 @@ class Game:
 
 		self.player = Player()
 
-		self.player.pos = pygame.Vector2(100, 100)
+		self.player.pos = pygame.Vector2(self.screenSize[0] / 2, self.screenSize[1] / 2)
 
 		pygame.display.set_caption("Asteroids")
 
@@ -78,6 +72,27 @@ class Game:
 		pygame.mixer.music.load('../resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen
 		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
+
+		textSpacing = 20
+		textUpperLeft = pygame.Vector2(textSpacing, textSpacing)
+		textUpperRight = pygame.Vector2(self.screenSize[0] - textSpacing, textSpacing)
+
+		textScore = Text(pygame.Vector2(textUpperLeft), "Score:")
+		textScoreNumber = Text(pygame.Vector2(textUpperLeft.x + textScore.width() + textSpacing, textUpperLeft.y), "0")
+		textLives = Text(pygame.Vector2(textUpperLeft.x, textUpperLeft.y + textScore.height() + textSpacing), "Lives:")
+		textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
+
+		textHighscore = Text(pygame.Vector2(0, 0), "Highscore:")
+		textHighscoreNumber = Text(pygame.Vector2(0, 0), "0")
+		textHighscore.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width() - textSpacing - textHighscore.width(), textUpperRight.y)
+		textHighscoreNumber.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width(), textUpperRight.y)
+
+		self.ui.append(textScore)
+		self.ui.append(textScoreNumber)
+		self.ui.append(textLives)
+		self.ui.append(textLivesNumber)
+		self.ui.append(textHighscore)
+		self.ui.append(textHighscoreNumber)
 
 	def colCircle(self, col1, col2):
 		if type(col1) not in (Player, Asteroid, Projectile, PowerUp):
@@ -374,15 +389,15 @@ class Game:
 
 	def draw(self, screen):
 		# Spieler zeichnen
-		self.player.draw(screen, self.WHITE)
+		self.player.draw(screen, Color.WHITE)
 
 		# Projektile zeichnen
 		for p in self.projectiles:
-			p.draw(screen, self.WHITE)
+			p.draw(screen, Color.WHITE)
 
 		# Asteroiden zeichnen
 		for a in self.asteroids:
-			a.draw(screen, self.WHITE)
+			a.draw(screen, Color.WHITE)
 
 		# PowerUps zeichnen
 		for p in self.collectablePowerUps:
@@ -391,3 +406,7 @@ class Game:
 		# Explosion zeichnen
 		for e in self.explosions:
 			e.draw(screen)
+
+		# Benutzeroberfläche (score etc.) zeichnen
+		for i in self.ui:
+			i.draw(screen)
