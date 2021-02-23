@@ -1,7 +1,6 @@
 import pygame
-
-from Text import Text
-from Color import Color
+from src.Text import Text
+from src.Color import Color
 
 
 class Button:

@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-from SpaceObject import SpaceObject
+from src.SpaceObject import SpaceObject
 
 
 class Asteroid(SpaceObject):

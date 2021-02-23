@@ -1,8 +1,8 @@
 import pygame
 
-from EventHandler import EventHandler
-from Menu import Menu
-from Game import Game
+from src.EventHandler import EventHandler
+from src.Menu import Menu
+from src.Game import Game
 
 pygame.init()
 
@@ -29,16 +29,16 @@ while eventHandler.windowActive:
 		menu.reload()
 
 	if menu.active:
-		# Menü aktualisieren
+		# Menue aktualisieren
 		menu.update()
 
-		# Menüauswahl
+		# Menueauswahl
 		if menu.selection == Menu.MenuSelection.resumeGame:
 			game.active = True
 			game.resume()
 		elif menu.selection == Menu.MenuSelection.startNewGame:
 			# Spiel neu starten
-			# Nicht ideal, besser wäre das vorhandene Game Objekt auf einen Ausganszustand zurückzusetzen
+			# Nicht ideal, besser waere das vorhandene Game Objekt auf einen Ausganszustand zurueckzusetzen
 			# TODO: better restart
 			game = Game(screenSize, eventHandler)
 			game.active = True
@@ -48,7 +48,7 @@ while eventHandler.windowActive:
 		elif menu.selection == Menu.MenuSelection.quit:
 			eventHandler.windowActive = False
 
-		# Menü zeichnen
+		# Menue zeichnen
 		menu.draw(screen)
 	elif game.active:
 		# Spiellogik

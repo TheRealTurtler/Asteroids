@@ -1,15 +1,15 @@
 import pygame
 import random
 
-from EventHandler import EventHandler
-from Player import Player
-from Asteroid import Asteroid
-from Projectile import Projectile
-from Sound import Sound
-from PowerUp import PowerUp
-from Explosion import Explosion
-from Color import Color
-from Text import Text
+from src.EventHandler import EventHandler
+from src.Player import Player
+from src.Asteroid import Asteroid
+from src.Projectile import Projectile
+from src.Sound import Sound
+from src.PowerUp import PowerUp
+from src.Explosion import Explosion
+from src.Color import Color
+from src.Text import Text
 
 
 class Game:
@@ -54,9 +54,9 @@ class Game:
 		pygame.display.set_caption("Asteroids")
 
 		# Sound Einstellungen
-		laser_wav = r'../resources/laser.wav'  # Laser pew sound lesen
-		asteroid_wav = r'../resources/asteroid3.wav'  # asteriod explosion sound lesen
-		powerup_wav = r'../resources/powerUp1.wav'  # powerUp sound lesen
+		laser_wav = r'./resources/laser.wav'  # Laser pew sound lesen
+		asteroid_wav = r'./resources/asteroid3.wav'  # asteriod explosion sound lesen
+		powerup_wav = r'./resources/powerUp1.wav'  # powerUp sound lesen
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
@@ -64,7 +64,7 @@ class Game:
 		self.soundExplosion = Sound(asteroid_wav, 0.1)
 		self.powerup = Sound(powerup_wav, 0.03)
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
-		pygame.mixer.music.load('../resources/Tetris.wav')
+		pygame.mixer.music.load('./resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen
 		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
 

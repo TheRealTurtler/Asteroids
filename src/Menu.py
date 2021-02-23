@@ -1,8 +1,8 @@
 import pygame
 
-from EventHandler import EventHandler
-from Button import Button
-from Color import Color
+from src.EventHandler import EventHandler
+from src.Button import Button
+from src.Color import Color
 
 
 class Menu:

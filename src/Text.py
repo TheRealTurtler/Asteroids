@@ -25,7 +25,7 @@ class Text:
 		self.color = color
 
 		# https://www.dafont.com/retro-gaming.font
-		self.font = pygame.font.Font("../resources/Retro_Gaming.ttf", self.size)
+		self.font = pygame.font.Font("./resources/Retro_Gaming.ttf", self.size)
 		self.img = self.font.render(text, True, self.color)
 
 	def width(self):

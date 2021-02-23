@@ -1,7 +1,7 @@
 import pygame
 
-from SpaceObject import SpaceObject
-from Color import Color
+from src.SpaceObject import SpaceObject
+from src.Color import Color
 
 
 class PowerUp(SpaceObject):

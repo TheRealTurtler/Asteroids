@@ -1,6 +1,6 @@
 import pygame
 
-from SpaceObject import SpaceObject
+from src.SpaceObject import SpaceObject
 
 
 class Particle(SpaceObject):

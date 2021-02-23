@@ -1,6 +1,6 @@
 import pygame
 
-from PowerUp import PowerUp
+from src.PowerUp import PowerUp
 
 class Player:		# TODO make player a Spaceobject
 	"""description of class"""

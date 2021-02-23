@@ -1,7 +1,7 @@
 import pygame
 import random
-from SpaceObject import SpaceObject
-from Particle import Particle
+from src.SpaceObject import SpaceObject
+from src.Particle import Particle
 
 
 class Explosion(SpaceObject):
