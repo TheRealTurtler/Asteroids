@@ -40,9 +40,9 @@ class PowerUp(SpaceObject):
 		if self.id == self.PowerUpIDs.fireRate:					# Feuerrate
 			color = Color.RED
 		elif self.id == self.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler
-			color = Color.BLUE
-		elif self.id == self.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
 			color = Color.GREEN
+		elif self.id == self.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
+			color = Color.BLUE
 		elif self.id == self.PowerUpIDs.multiShot:				# Multi-Schuss
 			color = Color.ORANGE
 		else:

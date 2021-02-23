@@ -78,9 +78,9 @@ class Game:
 		textUpperRight = pygame.Vector2(self.screenSize[0] - textSpacing, textSpacing)
 
 		textScore = Text(pygame.Vector2(textUpperLeft), "Score:")
-		textScoreNumber = Text(pygame.Vector2(textUpperLeft.x + textScore.width() + textSpacing, textUpperLeft.y), "0")
+		self.textScoreNumber = Text(pygame.Vector2(textUpperLeft.x + textScore.width() + textSpacing, textUpperLeft.y), "0")
 		textLives = Text(pygame.Vector2(textUpperLeft.x, textUpperLeft.y + textScore.height() + textSpacing), "Lives:")
-		textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
+		self.textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
 
 		textHighscore = Text(pygame.Vector2(0, 0), "Highscore:")
 		textHighscoreNumber = Text(pygame.Vector2(0, 0), "0")
@@ -88,9 +88,9 @@ class Game:
 		textHighscoreNumber.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width(), textUpperRight.y)
 
 		self.ui.append(textScore)
-		self.ui.append(textScoreNumber)
+		self.ui.append(self.textScoreNumber)
 		self.ui.append(textLives)
-		self.ui.append(textLivesNumber)
+		self.ui.append(self.textLivesNumber)
 		self.ui.append(textHighscore)
 		self.ui.append(textHighscoreNumber)
 
@@ -172,8 +172,8 @@ class Game:
 					)
 
 				vel = pygame.Vector2(
-					(random.random() - 0.5) * 4,  # Zufällige Geschwindigkeit
-					(random.random() - 0.5) * 4  # * 4, sodass maximale Geschwindigkeit 2 ist
+					(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
+					(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
 				)
 
 				rotSpeed = random.uniform(-2, 2)
@@ -308,7 +308,10 @@ class Game:
 				self.soundExplosion.stop()  # Sound anhalten (falls bereits aktiv)
 				self.soundExplosion.play()  # Sound abspielen
 				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
-				print("GAME OVER")  # TODO: Game Over
+
+				# Lebenszahl aktualisieren
+				self.player.lives -= 1 if self.player.lives > 0 else 0
+				self.textLivesNumber.setText(str(self.player.lives))
 
 			# Kugel - Asteroid
 			for col2 in self.asteroids[:]:
@@ -317,6 +320,10 @@ class Game:
 					self.soundExplosion.stop()		# Sound anhalten (falls bereits aktiv)
 					self.soundExplosion.play()		# Sound abspielen
 					self.explosions.append(Explosion(pygame.Vector2(col2.pos)))
+
+					# Punktzahl aktualisieren
+					self.player.score += col2.scorePoints
+					self.textScoreNumber.setText(str(self.player.score))
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
@@ -327,20 +334,18 @@ class Game:
 							)
 
 							vel = pygame.Vector2(
-								(random.random() - 0.5) * 4,  # Zufällige Geschwindigkeit
-								(random.random() - 0.5) * 4  # * 4, sodass maximale Geschwindigkeit 2 ist
+								(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
+								(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
 							)
 
 							size = Asteroid.sizeMedium
-							speedMult = Asteroid.speedMultiplierMedium
 
 							rotSpeed = random.uniform(-2, 2)
 
 							if col2.size == Asteroid.sizeMedium:
 								size = Asteroid.sizeSmall
-								speedMult = Asteroid.speedMultiplierSmall
 
-							self.asteroids.append(Asteroid(pos, vel, rotSpeed, size, speedMult))
+							self.asteroids.append(Asteroid(pos, vel, rotSpeed, size))
 
 					self.asteroids.remove(col2)
 					break
@@ -366,7 +371,10 @@ class Game:
 				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
 				self.explosions.append(Explosion(pygame.Vector2(col.pos)))
 				self.asteroids.remove(col)
-				print("GAME OVER")  # TODO: Game Over
+
+				# Lebenszahl aktualisieren
+				self.player.lives -= 1 if self.player.lives > 0 else 0
+				self.textLivesNumber.setText(str(self.player.lives))
 
 		# PowerUp - Spieler
 		for (idx, col) in enumerate(self.collectablePowerUps[:]):

@@ -43,6 +43,9 @@ class Player:		# TODO make player a Spaceobject
 		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]
 		self.bulletAmount = 1
 
+		self.score = 0
+		self.lives = 5
+
 	def update(self):
 		# Beschleunigung limitieren
 		if self.acc.magnitude() > self.accMax:

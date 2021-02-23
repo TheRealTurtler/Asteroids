@@ -21,19 +21,24 @@ class Text:
 			pygame.font.init()
 
 		self.pos = pos
-		self.text = text
 		self.size = size
 		self.color = color
 
 		# https://www.dafont.com/retro-gaming.font
 		self.font = pygame.font.Font("../resources/Retro_Gaming.ttf", self.size)
-		self.img = self.font.render(self.text, True, self.color)
+		self.img = self.font.render(text, True, self.color)
 
 	def width(self):
 		return self.img.get_width()
 
 	def height(self):
 		return self.img.get_height()
+
+	def setText(self, text):
+		if type(text) != str:
+			raise TypeError
+
+		self.img = self.font.render(text, True, self.color)
 
 	def update(self):
 		pass
