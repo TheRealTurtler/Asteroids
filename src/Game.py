@@ -1,6 +1,7 @@
 import pygame
 import random
 
+from EventHandler import EventHandler
 from Player import Player
 from Asteroid import Asteroid
 from Projectile import Projectile
@@ -12,30 +13,23 @@ from Text import Text
 
 
 class Game:
-	def __init__(self, screenSize):
+	def __init__(self, screenSize, eventHandler):
 		if type(screenSize) != tuple:
 			raise TypeError
 
 		if len(screenSize) != 2:
 			raise IndexError
 
+		if type(eventHandler) != EventHandler:
+			raise TypeError
+
 		# Zufallszahlen initialisieren
 		random.seed()
 
 		self.screenSize = screenSize
+		self.eventHandler = eventHandler
 
 		self.active = False
-
-		self.pressed_W = False
-		self.pressed_A = False
-		self.pressed_S = False
-		self.pressed_D = False
-		self.pressed_Space = False
-		self.pressed_Up = False
-		self.pressed_Down = False
-		self.pressed_Left = False
-		self.pressed_Right = False
-		self.pressed_Esc = False
 
 		self.projectiles = []
 		self.asteroids = []
@@ -43,7 +37,7 @@ class Game:
 		self.ui = []
 
 		self.collectablePowerUps = []
-		self.lastPowerUpSpawnTime = 0
+		self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 		#self.itemActiveFlag = 0
 		#self.upgrade = ["firerate", "speed", "projectilspeed"]
 		#self.itemDuration = 10000
@@ -107,61 +101,11 @@ class Game:
 
 		return False
 
-	def handleEvents(self):
-		for event in pygame.event.get():
-
-			# Game quit
-			if event.type == pygame.QUIT:
-				self.active = False
-
-			# Key pressed
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_w:
-					self.pressed_W = True
-				elif event.key == pygame.K_a:
-					self.pressed_A = True
-				elif event.key == pygame.K_s:
-					self.pressed_S = True
-				elif event.key == pygame.K_d:
-					self.pressed_D = True
-				elif event.key == pygame.K_SPACE:
-					self.pressed_Space = True
-				elif event.key == pygame.K_UP:
-					self.pressed_Up = True
-				elif event.key == pygame.K_DOWN:
-					self.pressed_Down = True
-				elif event.key == pygame.K_LEFT:
-					self.pressed_Left = True
-				elif event.key == pygame.K_RIGHT:
-					self.pressed_Right = True
-				elif event.key == pygame.K_ESCAPE:
-					self.pressed_Esc = True
-
-			# Key released
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_w:
-					self.pressed_W = False
-				elif event.key == pygame.K_a:
-					self.pressed_A = False
-				elif event.key == pygame.K_s:
-					self.pressed_S = False
-				elif event.key == pygame.K_d:
-					self.pressed_D = False
-				elif event.key == pygame.K_SPACE:
-					self.pressed_Space = False
-				elif event.key == pygame.K_UP:
-					self.pressed_Up = False
-				elif event.key == pygame.K_DOWN:
-					self.pressed_Down = False
-				elif event.key == pygame.K_LEFT:
-					self.pressed_Left = False
-				elif event.key == pygame.K_RIGHT:
-					self.pressed_Right = False
-				elif event.key == pygame.K_ESCAPE:
-					self.pressed_Esc = False
-
-	# Mouse button pressed
-	# elif event.type == pygame.MOUSEBUTTONDOWN :
+	def resume(self):
+		# Direkten PowerUp spawn verhindern, wenn das Spiel fortgesetzt wird
+		# Nicht ideal, da somit der Timer verlängert wird, wenn das Spiel pausiert wird
+		# TODO: better PowerUp spawn timer when resuming the game
+		self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
 	def update(self):
 		# Asteroiden spawnen
@@ -186,6 +130,7 @@ class Game:
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
+		# TODO: PowerUp spawn limit
 		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:  # Neues Item spawnen, alle ?????? ms
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
@@ -202,26 +147,26 @@ class Game:
 			# self.collectablePowerUps.append(PowerUp(pos, 3))
 
 		# Beschleunigung nach gedrückten Tasten festlegen
-		if self.pressed_W and not self.pressed_S:
+		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
 			self.player.acc.y = -self.player.accMax
-		if self.pressed_A and not self.pressed_D:
+		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
 			self.player.acc.x = -self.player.accMax
-		if self.pressed_S and not self.pressed_W:
+		if self.eventHandler.pressed_S and not self.eventHandler.pressed_W:
 			self.player.acc.y = self.player.accMax
-		if self.pressed_D and not self.pressed_A:
+		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
 			self.player.acc.x = self.player.accMax
 
 		# Beschleunigung = 0, wenn entgegengesetzte Tasten gedrückt werden
-		if self.pressed_W == self.pressed_S:
+		if self.eventHandler.pressed_W == self.eventHandler.pressed_S:
 			self.player.acc.y = 0
 
-		if self.pressed_A == self.pressed_D:
+		if self.eventHandler.pressed_A == self.eventHandler.pressed_D:
 			self.player.acc.x = 0
 
 		# Rotation Spieler
-		if self.pressed_Left and not self.pressed_Right:
+		if self.eventHandler.pressed_Left and not self.eventHandler.pressed_Right:
 			self.player.rot -= self.player.rotPerTick
-		if self.pressed_Right and not self.pressed_Left:
+		if self.eventHandler.pressed_Right and not self.eventHandler.pressed_Left:
 			self.player.rot += self.player.rotPerTick
 
 		# Spielerposition aktualisieren
@@ -239,7 +184,7 @@ class Game:
 			self.player.pos.y = 0
 
 		# Projektile
-		if self.pressed_Space:
+		if self.eventHandler.pressed_Space:
 			# Feuerrate begrenzen
 			if pygame.time.get_ticks() - self.player.timeLastShot > 1000 / self.player.fireRate:
 				self.player.timeLastShot = pygame.time.get_ticks()

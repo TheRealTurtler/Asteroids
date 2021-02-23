@@ -1,8 +1,8 @@
 import pygame
 
-from Game import Game
-from Color import Color
+from EventHandler import EventHandler
 from Menu import Menu
+from Game import Game
 
 pygame.init()
 
@@ -10,22 +10,44 @@ pygame.init()
 
 screenSize = (1280, 720)
 
-menu = Menu(screenSize)
-game = Game(screenSize)
+eventHandler = EventHandler()
+menu = Menu(screenSize, eventHandler)
+game = Game(screenSize, eventHandler)
 
 screen = pygame.display.set_mode(screenSize)
 
 clock = pygame.time.Clock()
 
-windowActive = True
-
 # ==============================================================================
 
-while windowActive:
+while eventHandler.windowActive:
 	# Events abhandeln
-	game.handleEvents()
+	eventHandler.handleEvents()
+
+	if eventHandler.pressed_Esc:
+		game.active = False
+		menu.reload()
 
 	if menu.active:
+		# Menü aktualisieren
+		menu.update()
+
+		# Menüauswahl
+		if menu.selection == Menu.MenuSelection.resumeGame:
+			game.active = True
+			game.resume()
+		elif menu.selection == Menu.MenuSelection.startNewGame:
+			# Spiel neu starten
+			# Nicht ideal, besser wäre das vorhandene Game Objekt auf einen Ausganszustand zurückzusetzen
+			# TODO: better restart
+			game = Game(screenSize, eventHandler)
+			game.active = True
+		elif menu.selection == Menu.MenuSelection.highscores:
+			# TODO: Highscores
+			pass
+		elif menu.selection == Menu.MenuSelection.quit:
+			eventHandler.windowActive = False
+
 		# Menü zeichnen
 		menu.draw(screen)
 	elif game.active:
