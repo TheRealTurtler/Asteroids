@@ -24,7 +24,7 @@ class Game:
 
 		self.screenSize = screenSize
 
-		self.gameActive = True
+		self.active = False
 
 		self.pressed_W = False
 		self.pressed_A = False
@@ -35,6 +35,7 @@ class Game:
 		self.pressed_Down = False
 		self.pressed_Left = False
 		self.pressed_Right = False
+		self.pressed_Esc = False
 
 		self.projectiles = []
 		self.asteroids = []
@@ -111,7 +112,7 @@ class Game:
 
 			# Game quit
 			if event.type == pygame.QUIT:
-				self.gameActive = False
+				self.active = False
 
 			# Key pressed
 			elif event.type == pygame.KEYDOWN:
@@ -133,6 +134,8 @@ class Game:
 					self.pressed_Left = True
 				elif event.key == pygame.K_RIGHT:
 					self.pressed_Right = True
+				elif event.key == pygame.K_ESCAPE:
+					self.pressed_Esc = True
 
 			# Key released
 			elif event.type == pygame.KEYUP:
@@ -154,6 +157,8 @@ class Game:
 					self.pressed_Left = False
 				elif event.key == pygame.K_RIGHT:
 					self.pressed_Right = False
+				elif event.key == pygame.K_ESCAPE:
+					self.pressed_Esc = False
 
 	# Mouse button pressed
 	# elif event.type == pygame.MOUSEBUTTONDOWN :
@@ -385,6 +390,11 @@ class Game:
 
 				self.collectablePowerUps.remove(col)
 
+		# Game Over
+		if self.player.lives == 0:
+			# TODO: Game Over
+			pass
+
 	# DEBUG
 	# print(len(self.projectiles))
 	# print(self.player.pos,
@@ -396,6 +406,9 @@ class Game:
 	# 	  self.pressed_D)
 
 	def draw(self, screen):
+		# Spielfeld löschen
+		screen.fill(Color.BLACK)
+
 		# Spieler zeichnen
 		self.player.draw(screen, Color.WHITE)
 

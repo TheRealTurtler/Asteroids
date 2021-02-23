@@ -2,6 +2,7 @@ import pygame
 
 from Game import Game
 from Color import Color
+from Menu import Menu
 
 pygame.init()
 
@@ -9,26 +10,30 @@ pygame.init()
 
 screenSize = (1280, 720)
 
+menu = Menu(screenSize)
 game = Game(screenSize)
 
 screen = pygame.display.set_mode(screenSize)
 
 clock = pygame.time.Clock()
 
+windowActive = True
+
 # ==============================================================================
 
-while game.gameActive:
+while windowActive:
 	# Events abhandeln
 	game.handleEvents()
 
-	# Spiellogik
-	game.update()
+	if menu.active:
+		# Menü zeichnen
+		menu.draw(screen)
+	elif game.active:
+		# Spiellogik
+		game.update()
 
-	# Spielfeld löschen
-	screen.fill(Color.BLACK)
-
-	# Rendern
-	game.draw(screen)
+		# Rendern
+		game.draw(screen)
 
 	# Fenster aktualisieren
 	pygame.display.flip()
