@@ -15,7 +15,7 @@ screenSize = (1280, 720)
 eventHandler = EventHandler()
 highscores = Highscores("./resources/highscores.txt")
 menu = Menu(screenSize, eventHandler)
-game = Game(screenSize, eventHandler)
+game = Game(screenSize, eventHandler, highscores.highscore)
 gameOver = GameOver(screenSize, eventHandler)
 
 screen = pygame.display.set_mode(screenSize)
@@ -45,7 +45,7 @@ while eventHandler.windowActive:
 			# Spiel neu starten
 			# Nicht ideal, besser waere das vorhandene Game Objekt auf einen Ausganszustand zurueckzusetzen
 			# TODO: better restart
-			game = Game(screenSize, eventHandler)
+			game = Game(screenSize, eventHandler, highscores.highscore)
 			game.state = Game.GameStates.active
 		elif menu.selection == Menu.MenuSelection.highscores:
 			# TODO: Highscores

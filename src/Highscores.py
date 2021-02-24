@@ -18,6 +18,8 @@ class Highscores:
 		with open(self.highscoreFile, 'r') as handle:
 			self.data = handle.readlines()
 
+		self.highscore = int(self.data[0][:-1])
+
 		textSpacing = 20
 		upperLeft = pygame.Vector2(textSpacing, textSpacing)
 
@@ -33,8 +35,8 @@ class Highscores:
 
 		if score > int(self.data[-1][:-1]):
 			self.data[-1] = str(score) + "\n"
-
 			self.data.sort(key = lambda element: int(element[:-1]), reverse = True)
+			self.highscore = int(self.data[0][:-1])
 
 			with open(self.highscoreFile, 'w') as handle:
 				handle.writelines(self.data)

@@ -21,6 +21,8 @@ class Asteroid(SpaceObject):
     scorePointsMedium = 50
     scorePointsSmall = 100
 
+    maxRotSpeed = 2
+
     def __init__(self, pos, vel=pygame.Vector2(0, 0), rotSpeed = 1, size = sizeBig):
         self.scorePoints = 0
         speedMultiplier = 1

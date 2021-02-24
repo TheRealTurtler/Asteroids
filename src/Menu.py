@@ -29,6 +29,7 @@ class Menu:
 		self.active = True
 		self.selection = -1
 
+		# TODO: better positioning
 		self.button_ResumeGame = Button(pygame.Vector2(20, 20), 400, 80, "Resume Game")
 		self.button_StartNewGame = Button(pygame.Vector2(20, 120), 400, 80, "Start New Game")
 		self.button_Highscores = Button(pygame.Vector2(20, 220), 400, 80, "Highscores")

@@ -13,13 +13,17 @@ from src.Text import Text
 
 
 class Game:
+	maxCountAsteroids = 10
+	maxCountSmallerAsteroids = 5
+	maxCountPowerUps = 5
+
 	class GameStates:
 		inactive = 0		# Spiel pausiert (Menü)
 		active = 1			# Spiel aktiv
 		over = 2			# Spiel vorbei (Highscore noch nicht überprüft)
 		ended = 3			# Spiel vorbei (Highscore bereits überprüft)
 
-	def __init__(self, screenSize, eventHandler):
+	def __init__(self, screenSize, eventHandler, highscore):
 		if type(screenSize) != tuple:
 			raise TypeError
 
@@ -29,11 +33,15 @@ class Game:
 		if type(eventHandler) != EventHandler:
 			raise TypeError
 
+		if type(highscore) != int:
+			raise TypeError
+
 		# Zufallszahlen initialisieren
 		random.seed()
 
 		self.screenSize = screenSize
 		self.eventHandler = eventHandler
+		self.highscore = highscore
 
 		self.state = Game.GameStates.inactive
 
@@ -84,7 +92,7 @@ class Game:
 		self.textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
 
 		textHighscore = Text(pygame.Vector2(0, 0), "Highscore:")
-		textHighscoreNumber = Text(pygame.Vector2(0, 0), "0")
+		textHighscoreNumber = Text(pygame.Vector2(0, 0), str(self.highscore))
 		textHighscore.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width() - textSpacing - textHighscore.width(), textUpperRight.y)
 		textHighscoreNumber.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width(), textUpperRight.y)
 
@@ -121,7 +129,7 @@ class Game:
 	def update(self):
 		# Asteroiden spawnen
 		if len(self.asteroids) == 0:  # Neue Asteroiden spawnen, wenn keine mehr da sind
-			for a in range(0, random.randrange(1, 5)):  # Zufällig zwischen 1 und 5 Asteroiden spawnen
+			for a in range(0, random.randrange(1, Game.maxCountAsteroids)):  # Zufällige Anzahl an Asteroiden spawnen
 				pos = self.player.pos
 
 				# Asteroid nicht direkt auf Spieler spawnen
@@ -141,20 +149,21 @@ class Game:
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
-		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay and len(self.collectablePowerUps) < 5:
+		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
-			pos = self.player.pos
+			if len(self.collectablePowerUps) < Game.maxCountPowerUps:
+				pos = self.player.pos
 
-			# Item nicht direkt auf Spieler spawnen
-			while (pos - self.player.pos).magnitude() < PowerUp.size * 4:
-				pos = pygame.Vector2(
-					random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
-					random.randrange(0, self.screenSize[1])
-				)
+				# Item nicht direkt auf Spieler spawnen
+				while (pos - self.player.pos).magnitude() < PowerUp.size * 4:
+					pos = pygame.Vector2(
+						random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
+						random.randrange(0, self.screenSize[1])
+					)
 
-			self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
-			# self.collectablePowerUps.append(PowerUp(pos, 3))
+				self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
+				# self.collectablePowerUps.append(PowerUp(pos, 3))
 
 		# Beschleunigung nach gedrückten Tasten festlegen
 		# TODO: original Asteroids controls
@@ -288,7 +297,7 @@ class Game:
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
-						for a in range(0, random.randrange(1, 3)):  # Zufällig zwischen 1 und 3 Asteroiden spawnen
+						for a in range(0, random.randrange(1, Game.maxCountSmallerAsteroids)):		# Zufällige Anzahl kleinerer Asteroiden spawnen
 							pos = col2.pos + pygame.Vector2(
 								random.randrange(-col2.size, col2.size),  # Zufälliger Abstand zum vorherigen Asteroiden
 								random.randrange(-col2.size, col2.size)
@@ -301,7 +310,7 @@ class Game:
 
 							size = Asteroid.sizeMedium
 
-							rotSpeed = random.uniform(-2, 2)
+							rotSpeed = random.uniform(-Asteroid.maxRotSpeed, Asteroid.maxRotSpeed)
 
 							if col2.size == Asteroid.sizeMedium:
 								size = Asteroid.sizeSmall
