@@ -1,8 +1,10 @@
 import pygame
 
+from src.Color import Color
+
 
 class Text:
-	def __init__(self, pos = pygame.Vector2(0, 0), text = "", size = 32, color = pygame.Color(255, 255, 255)):
+	def __init__(self, pos = pygame.Vector2(0, 0), text = "", size = 32, color = Color.WHITE):
 		if type(pos) != pygame.Vector2:
 			raise TypeError
 
@@ -21,12 +23,13 @@ class Text:
 			pygame.font.init()
 
 		self.pos = pos
+		self.text = text
 		self.size = size
 		self.color = color
 
 		# https://www.dafont.com/retro-gaming.font
-		self.font = pygame.font.Font("../resources/Retro_Gaming.ttf", self.size)
-		self.img = self.font.render(text, True, self.color)
+		self.font = pygame.font.Font("./resources/Retro_Gaming.ttf", self.size)
+		self.img = self.font.render(self.text, True, self.color)
 
 	def width(self):
 		return self.img.get_width()
@@ -40,8 +43,12 @@ class Text:
 
 		self.img = self.font.render(text, True, self.color)
 
-	def update(self):
-		pass
+	def setColor(self, color):
+		if type(color) != pygame.Color:
+			raise TypeError
+
+		self.color = color
+		self.img = self.font.render(self.text, True, self.color)
 
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:

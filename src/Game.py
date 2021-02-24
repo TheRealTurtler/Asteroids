@@ -1,19 +1,29 @@
 import pygame
 import random
 
-from EventHandler import EventHandler
-from Player import Player
-from Asteroid import Asteroid
-from Projectile import Projectile
-from Sound import Sound
-from PowerUp import PowerUp
-from Explosion import Explosion
-from Color import Color
-from Text import Text
+from src.EventHandler import EventHandler
+from src.Player import Player
+from src.Asteroid import Asteroid
+from src.Projectile import Projectile
+from src.Sound import Sound
+from src.PowerUp import PowerUp
+from src.Explosion import Explosion
+from src.Color import Color
+from src.Text import Text
 
 
 class Game:
-	def __init__(self, screenSize, eventHandler):
+	maxCountAsteroids = 10
+	maxCountSmallerAsteroids = 5
+	maxCountPowerUps = 5
+
+	class GameStates:
+		inactive = 0		# Spiel pausiert (Menü)
+		active = 1			# Spiel aktiv
+		over = 2			# Spiel vorbei (Highscore noch nicht überprüft)
+		ended = 3			# Spiel vorbei (Highscore bereits überprüft)
+
+	def __init__(self, screenSize, eventHandler, highscore):
 		if type(screenSize) != tuple:
 			raise TypeError
 
@@ -23,13 +33,17 @@ class Game:
 		if type(eventHandler) != EventHandler:
 			raise TypeError
 
+		if type(highscore) != int:
+			raise TypeError
+
 		# Zufallszahlen initialisieren
 		random.seed()
 
 		self.screenSize = screenSize
 		self.eventHandler = eventHandler
+		self.highscore = highscore
 
-		self.active = False
+		self.state = Game.GameStates.inactive
 
 		self.projectiles = []
 		self.asteroids = []
@@ -54,9 +68,9 @@ class Game:
 		pygame.display.set_caption("Asteroids")
 
 		# Sound Einstellungen
-		laser_wav = r'../resources/laser.wav'  # Laser pew sound lesen
-		asteroid_wav = r'../resources/asteroid3.wav'  # asteriod explosion sound lesen
-		powerup_wav = r'../resources/powerUp1.wav'  # powerUp sound lesen
+		laser_wav = r'./resources/laser.wav'  # Laser pew sound lesen
+		asteroid_wav = r'./resources/asteroid3.wav'  # asteriod explosion sound lesen
+		powerup_wav = r'./resources/powerUp1.wav'  # powerUp sound lesen
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
@@ -64,7 +78,7 @@ class Game:
 		self.soundExplosion = Sound(asteroid_wav, 0.1)
 		self.powerup = Sound(powerup_wav, 0.03)
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
-		pygame.mixer.music.load('../resources/Tetris.wav')
+		pygame.mixer.music.load('./resources/Tetris.wav')
 		pygame.mixer.music.set_volume(0.03)  # leiser machen
 		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
 
@@ -78,7 +92,7 @@ class Game:
 		self.textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
 
 		textHighscore = Text(pygame.Vector2(0, 0), "Highscore:")
-		textHighscoreNumber = Text(pygame.Vector2(0, 0), "0")
+		textHighscoreNumber = Text(pygame.Vector2(0, 0), str(self.highscore))
 		textHighscore.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width() - textSpacing - textHighscore.width(), textUpperRight.y)
 		textHighscoreNumber.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width(), textUpperRight.y)
 
@@ -102,6 +116,11 @@ class Game:
 		return False
 
 	def resume(self):
+		if self.player.lives > 0:
+			self.state = Game.GameStates.active
+		else:
+			self.state = Game.GameStates.ended
+
 		# Direkten PowerUp spawn verhindern, wenn das Spiel fortgesetzt wird
 		# Nicht ideal, da somit der Timer verlängert wird, wenn das Spiel pausiert wird
 		# TODO: better PowerUp spawn timer when resuming the game
@@ -110,7 +129,7 @@ class Game:
 	def update(self):
 		# Asteroiden spawnen
 		if len(self.asteroids) == 0:  # Neue Asteroiden spawnen, wenn keine mehr da sind
-			for a in range(0, random.randrange(1, 5)):  # Zufällig zwischen 1 und 5 Asteroiden spawnen
+			for a in range(0, random.randrange(1, Game.maxCountAsteroids)):  # Zufällige Anzahl an Asteroiden spawnen
 				pos = self.player.pos
 
 				# Asteroid nicht direkt auf Spieler spawnen
@@ -130,44 +149,33 @@ class Game:
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
-		# TODO: PowerUp spawn limit
-		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:  # Neues Item spawnen, alle ?????? ms
+		# Timer Reset so nicht ideal, da man die maximale Anzahl spawnen lassen kann und es spawnt beim einsammeln
+		# evtl. direkt ein neues PowerUp
+		# TODO: better PowerUP timer
+		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
-			pos = self.player.pos
+			if len(self.collectablePowerUps) < Game.maxCountPowerUps:
+				pos = self.player.pos
 
-			# Item nicht direkt auf Spieler spawnen
-			while (pos - self.player.pos).magnitude() < PowerUp.size * 4:
-				pos = pygame.Vector2(
-					random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
-					random.randrange(0, self.screenSize[1])
-				)
+				# Item nicht direkt auf Spieler spawnen
+				while (pos - self.player.pos).magnitude() < PowerUp.size * 4:
+					pos = pygame.Vector2(
+						random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
+						random.randrange(0, self.screenSize[1])
+					)
 
-			self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
-			# self.collectablePowerUps.append(PowerUp(pos, 3))
+				self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
 
-		# Beschleunigung nach gedrückten Tasten festlegen
+		# Beschleunigung und Rotation nach gedrückten Tasten festlegen
 		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
-			self.player.acc.y = -self.player.accMax
+			self.player.acc = self.player.lookDir * Player.accMax
 		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
-			self.player.acc.x = -self.player.accMax
-		if self.eventHandler.pressed_S and not self.eventHandler.pressed_W:
-			self.player.acc.y = self.player.accMax
+			self.player.rot -= Player.rotPerTick
+		if self.eventHandler.pressed_S or not self.eventHandler.pressed_W:
+			self.player.acc = pygame.Vector2(0, 0)
 		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
-			self.player.acc.x = self.player.accMax
-
-		# Beschleunigung = 0, wenn entgegengesetzte Tasten gedrückt werden
-		if self.eventHandler.pressed_W == self.eventHandler.pressed_S:
-			self.player.acc.y = 0
-
-		if self.eventHandler.pressed_A == self.eventHandler.pressed_D:
-			self.player.acc.x = 0
-
-		# Rotation Spieler
-		if self.eventHandler.pressed_Left and not self.eventHandler.pressed_Right:
-			self.player.rot -= self.player.rotPerTick
-		if self.eventHandler.pressed_Right and not self.eventHandler.pressed_Left:
-			self.player.rot += self.player.rotPerTick
+			self.player.rot += Player.rotPerTick
 
 		# Spielerposition aktualisieren
 		self.player.update()
@@ -277,7 +285,7 @@ class Game:
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
-						for a in range(0, random.randrange(1, 3)):  # Zufällig zwischen 1 und 3 Asteroiden spawnen
+						for a in range(0, random.randrange(1, Game.maxCountSmallerAsteroids)):		# Zufällige Anzahl kleinerer Asteroiden spawnen
 							pos = col2.pos + pygame.Vector2(
 								random.randrange(-col2.size, col2.size),  # Zufälliger Abstand zum vorherigen Asteroiden
 								random.randrange(-col2.size, col2.size)
@@ -290,7 +298,7 @@ class Game:
 
 							size = Asteroid.sizeMedium
 
-							rotSpeed = random.uniform(-2, 2)
+							rotSpeed = random.uniform(-Asteroid.maxRotSpeed, Asteroid.maxRotSpeed)
 
 							if col2.size == Asteroid.sizeMedium:
 								size = Asteroid.sizeSmall
@@ -337,18 +345,7 @@ class Game:
 
 		# Game Over
 		if self.player.lives == 0:
-			# TODO: Game Over
-			pass
-
-	# DEBUG
-	# print(len(self.projectiles))
-	# print(self.player.pos,
-	# 	  self.player.vel,
-	# 	  self.player.acc,
-	# 	  self.pressed_W,
-	# 	  self.pressed_A,
-	# 	  self.pressed_S,
-	# 	  self.pressed_D)
+			self.state = Game.GameStates.over
 
 	def draw(self, screen):
 		# Spielfeld löschen

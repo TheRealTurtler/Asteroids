@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-from SpaceObject import SpaceObject
+from src.SpaceObject import SpaceObject
 
 
 class Asteroid(SpaceObject):
@@ -20,6 +20,8 @@ class Asteroid(SpaceObject):
     scorePointsBig = 20
     scorePointsMedium = 50
     scorePointsSmall = 100
+
+    maxRotSpeed = 2
 
     def __init__(self, pos, vel=pygame.Vector2(0, 0), rotSpeed = 1, size = sizeBig):
         self.scorePoints = 0
