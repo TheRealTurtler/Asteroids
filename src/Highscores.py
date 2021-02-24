@@ -9,11 +9,13 @@ class Highscores:
 		if type(highscoreFile) != str:
 			raise TypeError
 
+		self.highscoreFile = highscoreFile
+
 		self.active = False
 		self.data = []
 		self.ui = []
 
-		with open(highscoreFile, 'r') as handle:
+		with open(self.highscoreFile, 'r') as handle:
 			self.data = handle.readlines()
 
 		textSpacing = 20
@@ -30,7 +32,16 @@ class Highscores:
 			raise TypeError
 
 		if score > int(self.data[-1][:-1]):
-			print(score)
+			self.data[-1] = str(score) + "\n"
+
+			self.data.sort(key = lambda element: int(element[:-1]), reverse = True)
+
+			with open(self.highscoreFile, 'w') as handle:
+				handle.writelines(self.data)
+
+			for (idx, d) in enumerate(self.data):
+				self.ui[idx + 1].setText(d[:-1])
+
 			return True
 
 		return False

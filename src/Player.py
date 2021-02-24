@@ -38,6 +38,7 @@ class Player:		# TODO make player a Spaceobject
 			pygame.Vector2(5, -10)
 		]
 
+		# TODO: center player in hit-circle
 		self.polygonPoints = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
 
 		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]

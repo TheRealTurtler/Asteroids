@@ -157,6 +157,7 @@ class Game:
 			# self.collectablePowerUps.append(PowerUp(pos, 3))
 
 		# Beschleunigung nach gedrückten Tasten festlegen
+		# TODO: original Asteroids controls
 		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
 			self.player.acc.y = -self.player.accMax
 		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
