@@ -130,8 +130,7 @@ class Game:
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
-		# TODO: PowerUp spawn limit
-		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:  # Neues Item spawnen, alle ?????? ms
+		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay and len(self.collectablePowerUps) < 5:
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
 			pos = self.player.pos
