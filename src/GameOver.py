@@ -8,6 +8,8 @@ from src.Color import Color
 class GameOver:
 	textSpacing = 20
 
+	displayDelay = 1000
+
 	def __init__(self, screenSize, eventHandler):
 		if type(screenSize) != tuple:
 			raise TypeError
@@ -21,15 +23,23 @@ class GameOver:
 		self.screenSize = screenSize
 		self.eventHandler = eventHandler
 
+		self.timeUpdated = 0
+
 		self.active = False
 
 		self.textGameOver = Text(pygame.Vector2(0, 0), "Game Over", 48)
 		self.textNewHighScore = Text(pygame.Vector2(0, 0), "New Highscore Entry!", 48)
-		self.textScoreNumber = Text(pygame.Vector2(0,0), "0", 48)
+		self.textScoreNumber = Text(pygame.Vector2(0, 0), "0", 48)
+		self.textPressAnyKey = Text(pygame.Vector2(0, 0), "Press any Key to continue...", 20)
 
 		self.textGameOver.pos = pygame.Vector2(
 			self.screenSize[0] / 2 - self.textGameOver.width() / 2,
 			self.screenSize[1] / 2 - self.textGameOver.height() / 2
+		)
+
+		self.textPressAnyKey.pos = pygame.Vector2(
+			self.screenSize[0] / 2 - self.textPressAnyKey.width() / 2,
+			self.screenSize[1] - self.textPressAnyKey.height() - self.textSpacing
 		)
 
 		self.ui = [self.textGameOver]
@@ -37,6 +47,8 @@ class GameOver:
 	def newHighscore(self, highscore):
 		if type(highscore) not in (int, bool):
 			raise TypeError
+
+		self.timeUpdated = pygame.time.get_ticks()
 
 		if highscore > 0:
 			self.textNewHighScore.pos = pygame.Vector2(
@@ -65,6 +77,8 @@ class GameOver:
 			)
 
 			self.ui = [self.textGameOver]
+
+		self.ui.append(self.textPressAnyKey)
 
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:

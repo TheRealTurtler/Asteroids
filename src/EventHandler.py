@@ -17,6 +17,7 @@ class EventHandler:
 		self.pressed_Left = False
 		self.pressed_Right = False
 		self.pressed_Esc = False
+		self.pressed_Any = False
 
 		# Maus
 		self.pressed_M_Left = False
@@ -33,6 +34,8 @@ class EventHandler:
 
 			# Key pressed
 			elif event.type == pygame.KEYDOWN:
+				self.pressed_Any = True
+
 				if event.key == pygame.K_w:
 					self.pressed_W = True
 				elif event.key == pygame.K_a:
@@ -56,6 +59,8 @@ class EventHandler:
 
 			# Key released
 			elif event.type == pygame.KEYUP:
+				self.pressed_Any = False
+
 				if event.key == pygame.K_w:
 					self.pressed_W = False
 				elif event.key == pygame.K_a:

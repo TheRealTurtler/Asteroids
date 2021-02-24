@@ -14,10 +14,10 @@ from src.Text import Text
 
 class Game:
 	class GameStates:
-		inactive = 0
-		active = 1
-		over = 2
-		newHighscore = 3
+		inactive = 0		# Spiel pausiert (Menü)
+		active = 1			# Spiel aktiv
+		over = 2			# Spiel vorbei (Highscore noch nicht überprüft)
+		ended = 3			# Spiel vorbei (Highscore bereits überprüft)
 
 	def __init__(self, screenSize, eventHandler):
 		if type(screenSize) != tuple:
@@ -110,6 +110,8 @@ class Game:
 	def resume(self):
 		if self.player.lives > 0:
 			self.state = Game.GameStates.active
+		else:
+			self.state = Game.GameStates.ended
 
 		# Direkten PowerUp spawn verhindern, wenn das Spiel fortgesetzt wird
 		# Nicht ideal, da somit der Timer verlängert wird, wenn das Spiel pausiert wird

@@ -30,6 +30,7 @@ while eventHandler.windowActive:
 
 	if eventHandler.pressed_Esc:
 		highscores.active = False
+		gameOver.active = False
 		game.state = Game.GameStates.inactive
 		menu.reload()
 
@@ -76,11 +77,15 @@ while eventHandler.windowActive:
 		game.state = Game.GameStates.inactive
 		gameOver.active = True
 
-	elif game.state == Game.GameStates.newHighscore:
-		# TODO: display Highscore
-		pass
+	elif game.state == Game.GameStates.ended:
+		game.state = Game.GameStates.inactive
+		gameOver.active = True
 
 	elif gameOver.active:
+		if pygame.time.get_ticks() - gameOver.timeUpdated > GameOver.displayDelay and eventHandler.pressed_Any:
+			gameOver.active = False
+			menu.reload()
+
 		gameOver.draw(screen)
 
 	# Fenster aktualisieren
