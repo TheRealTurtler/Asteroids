@@ -149,6 +149,9 @@ class Game:
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
+		# Timer Reset so nicht ideal, da man die maximale Anzahl spawnen lassen kann und es spawnt beim einsammeln
+		# evtl. direkt ein neues PowerUp
+		# TODO: better PowerUP timer
 		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
@@ -163,37 +166,16 @@ class Game:
 					)
 
 				self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
-				# self.collectablePowerUps.append(PowerUp(pos, 3))
 
-		# Beschleunigung nach gedrückten Tasten festlegen
-		# TODO: original Asteroids controls
+		# Beschleunigung und Rotation nach gedrückten Tasten festlegen
 		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
-			# self.player.acc.y = -Player.accMax
 			self.player.acc = self.player.lookDir * Player.accMax
 		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
-			# self.player.acc.x = -Player.accMax
 			self.player.rot -= Player.rotPerTick
-		if self.eventHandler.pressed_S and not self.eventHandler.pressed_W:
-			# self.player.acc.y = Player.accMax
-			pass
-		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
-			# self.player.acc.x = Player.accMax
-			self.player.rot += Player.rotPerTick
-		if not self.eventHandler.pressed_W:
+		if self.eventHandler.pressed_S or not self.eventHandler.pressed_W:
 			self.player.acc = pygame.Vector2(0, 0)
-
-		# Beschleunigung = 0, wenn entgegengesetzte Tasten gedrückt werden
-		# if self.eventHandler.pressed_W == self.eventHandler.pressed_S:
-		# 	self.player.acc.y = 0
-		#
-		# if self.eventHandler.pressed_A == self.eventHandler.pressed_D:
-		# 	self.player.acc.x = 0
-
-		# Rotation Spieler
-		# if self.eventHandler.pressed_Left and not self.eventHandler.pressed_Right:
-		# 	self.player.rot -= Player.rotPerTick
-		# if self.eventHandler.pressed_Right and not self.eventHandler.pressed_Left:
-		# 	self.player.rot += Player.rotPerTick
+		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
+			self.player.rot += Player.rotPerTick
 
 		# Spielerposition aktualisieren
 		self.player.update()
@@ -364,16 +346,6 @@ class Game:
 		# Game Over
 		if self.player.lives == 0:
 			self.state = Game.GameStates.over
-
-	# DEBUG
-	# print(len(self.projectiles))
-	# print(self.player.pos,
-	# 	  self.player.vel,
-	# 	  self.player.acc,
-	# 	  self.pressed_W,
-	# 	  self.pressed_A,
-	# 	  self.pressed_S,
-	# 	  self.pressed_D)
 
 	def draw(self, screen):
 		# Spielfeld löschen
