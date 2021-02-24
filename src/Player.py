@@ -2,17 +2,17 @@ import pygame
 
 from src.PowerUp import PowerUp
 
-class Player:		# TODO make player a Spaceobject
-	"""description of class"""
-	accMax = 0.4
+
+class Player:
+	accMax = 0.25
 
 	# accPerTick = 0.1
 	frictionPerTick = 0.02
 	rotPerTick = 5
 
-	speedMaxDefault = 2
+	speedMaxDefault = 1.5
 	fireRateDefault = 5
-	projSpeedDefault = 2
+	projSpeedDefault = 2.5
 
 	bulletSpawnOffset = 5
 

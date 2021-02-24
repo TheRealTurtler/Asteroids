@@ -48,7 +48,6 @@ while eventHandler.windowActive:
 			game = Game(screenSize, eventHandler, highscores.highscore)
 			game.state = Game.GameStates.active
 		elif menu.selection == Menu.MenuSelection.highscores:
-			# TODO: Highscores
 			highscores.active = True
 		elif menu.selection == Menu.MenuSelection.quit:
 			eventHandler.windowActive = False
