@@ -49,21 +49,21 @@ class Player:		# TODO make player a Spaceobject
 
 	def update(self):
 		# Beschleunigung limitieren
-		if self.acc.magnitude() > self.accMax:
-			self.acc = self.accMax * self.acc.normalize()
+		if self.acc.magnitude() > Player.accMax:
+			self.acc = Player.accMax * self.acc.normalize()
 
 		# "Reibung"
 		if self.acc.x == 0:
 			if self.vel.x > 0:
-				self.acc.x = -self.frictionPerTick
+				self.acc.x = -Player.frictionPerTick
 			elif self.vel.x < 0:
-				self.acc.x = self.frictionPerTick
+				self.acc.x = Player.frictionPerTick
 
 		if self.acc.y == 0:
 			if self.vel.y > 0:
-				self.acc.y -= self.frictionPerTick
+				self.acc.y -= Player.frictionPerTick
 			elif self.vel.y < 0:
-				self.acc.y += self.frictionPerTick
+				self.acc.y += Player.frictionPerTick
 
 		# Untergrenze Beschleunigung
 		if abs(self.acc.x) < 1e-6:
@@ -79,9 +79,9 @@ class Player:		# TODO make player a Spaceobject
 			self.vel = self.speedMax * self.vel.normalize()
 
 		# Untergrenze Geschwindigleit
-		if abs(self.vel.x) < self.frictionPerTick:
+		if abs(self.vel.x) < Player.frictionPerTick:
 			self.vel.x = 0
-		if abs(self.vel.y) < self.frictionPerTick:
+		if abs(self.vel.y) < Player.frictionPerTick:
 			self.vel.y = 0
 
 		# Geschwindigkeit -> Position
@@ -104,16 +104,16 @@ class Player:		# TODO make player a Spaceobject
 
 		for b in range(bulletStartPos, self.bulletAmount, 2):
 			self.bulletSpawnPoints.append(
-				self.lookDir * self.bulletSpawnOffset
+				self.lookDir * Player.bulletSpawnOffset
 				+ self.polygonPoints[0]
-				+ pygame.Vector2(self.lookDir.y, -self.lookDir.x) * self.bulletSpawnOffset * b
+				+ pygame.Vector2(self.lookDir.y, -self.lookDir.x) * Player.bulletSpawnOffset * b
 			)
 
 			if b > 0:
 				self.bulletSpawnPoints.append(
-					self.lookDir * self.bulletSpawnOffset
+					self.lookDir * Player.bulletSpawnOffset
 					+ self.polygonPoints[0]
-					+ pygame.Vector2(-self.lookDir.y, self.lookDir.x) * self.bulletSpawnOffset * b
+					+ pygame.Vector2(-self.lookDir.y, self.lookDir.x) * Player.bulletSpawnOffset * b
 				)
 
 		# PowerUp-Effekte
