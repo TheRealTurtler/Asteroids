@@ -6,25 +6,32 @@ from src.Color import Color
 class Button:
 	textSpacing = 20
 
-	def __init__(self, pos, width, height, text):
-		if type(pos) != pygame.Vector2:
-			raise TypeError
-
-		if type(width) != int:
-			raise TypeError
-
-		if type(height) != int:
+	def __init__(self, rect, text, color = Color.WHITE):
+		if type(rect) != pygame.Rect:
 			raise TypeError
 
 		if type(text) != str:
 			raise TypeError
 
-		self.rect = pygame.Rect(pos.x, pos.y, width, height)
-		self.text = Text(pos + pygame.Vector2(self.textSpacing, self.textSpacing), text)
+		self.rect = rect
+		self.text = Text(pygame.Vector2(0, 0), text)
+		self.text.pos = pygame.Vector2(
+			self.rect.x + self.rect.width / 2 - self.text.width() / 2,
+			self.rect.y + self.rect.height / 2 - self.text.height() / 2,
+		)
+
+		self.color = color
+
+	def setColor(self, color):
+		if type(color) != pygame.Color:
+			raise TypeError
+
+		self.color = color
+		self.text.setColor(self.color)
 
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
-		pygame.draw.rect(screen, Color.WHITE, self.rect, 1)
+		pygame.draw.rect(screen, self.color, self.rect, 2)
 		self.text.draw(screen)

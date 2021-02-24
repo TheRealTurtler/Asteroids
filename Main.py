@@ -11,14 +11,13 @@ pygame.init()
 # ==============================================================================
 
 screenSize = (1280, 720)
+screen = pygame.display.set_mode(screenSize)
 
 eventHandler = EventHandler()
 highscores = Highscores("./resources/highscores.txt")
 menu = Menu(screenSize, eventHandler)
 game = Game(screenSize, eventHandler, highscores.highscore)
 gameOver = GameOver(screenSize, eventHandler)
-
-screen = pygame.display.set_mode(screenSize)
 
 clock = pygame.time.Clock()
 

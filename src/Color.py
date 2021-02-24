@@ -9,3 +9,5 @@ class Color:
 	BLUE = pygame.Color(0, 0, 255)
 	YELLOW = pygame.Color(255, 255, 0)
 	ORANGE = pygame.Color(255, 127, 0)
+	LIGHT_GREY = pygame.Color(180, 180, 180)
+	DARK_GREY = pygame.Color(80, 80, 80)
