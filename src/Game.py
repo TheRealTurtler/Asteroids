@@ -13,6 +13,12 @@ from src.Text import Text
 
 
 class Game:
+	class GameStates:
+		inactive = 0
+		active = 1
+		over = 2
+		newHighscore = 3
+
 	def __init__(self, screenSize, eventHandler):
 		if type(screenSize) != tuple:
 			raise TypeError
@@ -29,7 +35,7 @@ class Game:
 		self.screenSize = screenSize
 		self.eventHandler = eventHandler
 
-		self.active = False
+		self.state = Game.GameStates.inactive
 
 		self.projectiles = []
 		self.asteroids = []
@@ -102,6 +108,9 @@ class Game:
 		return False
 
 	def resume(self):
+		if self.player.lives > 0:
+			self.state = Game.GameStates.active
+
 		# Direkten PowerUp spawn verhindern, wenn das Spiel fortgesetzt wird
 		# Nicht ideal, da somit der Timer verlängert wird, wenn das Spiel pausiert wird
 		# TODO: better PowerUp spawn timer when resuming the game
@@ -336,8 +345,7 @@ class Game:
 
 		# Game Over
 		if self.player.lives == 0:
-			# TODO: Game Over
-			pass
+			self.state = Game.GameStates.over
 
 	# DEBUG
 	# print(len(self.projectiles))

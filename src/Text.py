@@ -40,9 +40,6 @@ class Text:
 
 		self.img = self.font.render(text, True, self.color)
 
-	def update(self):
-		pass
-
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:
 			raise TypeError

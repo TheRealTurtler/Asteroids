@@ -3,6 +3,8 @@ import pygame
 from src.EventHandler import EventHandler
 from src.Menu import Menu
 from src.Game import Game
+from src.Highscores import Highscores
+from src.GameOver import GameOver
 
 pygame.init()
 
@@ -11,8 +13,10 @@ pygame.init()
 screenSize = (1280, 720)
 
 eventHandler = EventHandler()
+highscores = Highscores("./resources/highscores.txt")
 menu = Menu(screenSize, eventHandler)
 game = Game(screenSize, eventHandler)
+gameOver = GameOver(screenSize, eventHandler)
 
 screen = pygame.display.set_mode(screenSize)
 
@@ -25,7 +29,8 @@ while eventHandler.windowActive:
 	eventHandler.handleEvents()
 
 	if eventHandler.pressed_Esc:
-		game.active = False
+		highscores.active = False
+		game.state = Game.GameStates.inactive
 		menu.reload()
 
 	if menu.active:
@@ -34,28 +39,49 @@ while eventHandler.windowActive:
 
 		# Menueauswahl
 		if menu.selection == Menu.MenuSelection.resumeGame:
-			game.active = True
 			game.resume()
 		elif menu.selection == Menu.MenuSelection.startNewGame:
 			# Spiel neu starten
 			# Nicht ideal, besser waere das vorhandene Game Objekt auf einen Ausganszustand zurueckzusetzen
 			# TODO: better restart
 			game = Game(screenSize, eventHandler)
-			game.active = True
+			game.state = Game.GameStates.active
 		elif menu.selection == Menu.MenuSelection.highscores:
 			# TODO: Highscores
-			pass
+			highscores.active = True
 		elif menu.selection == Menu.MenuSelection.quit:
 			eventHandler.windowActive = False
 
 		# Menue zeichnen
 		menu.draw(screen)
-	elif game.active:
+
+	elif highscores.active:
+		# Highscores
+		highscores.draw(screen)
+
+	elif game.state == Game.GameStates.active:
 		# Spiellogik
 		game.update()
 
 		# Rendern
 		game.draw(screen)
+
+	elif game.state == Game.GameStates.over:
+		# Game Over
+		if highscores.addScore(game.player.score):
+			gameOver.newHighscore(game.player.score)
+		else:
+			gameOver.newHighscore(False)
+
+		game.state = Game.GameStates.inactive
+		gameOver.active = True
+
+	elif game.state == Game.GameStates.newHighscore:
+		# TODO: display Highscore
+		pass
+
+	elif gameOver.active:
+		gameOver.draw(screen)
 
 	# Fenster aktualisieren
 	pygame.display.flip()
