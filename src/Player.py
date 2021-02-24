@@ -11,7 +11,7 @@ class Player:		# TODO make player a Spaceobject
 	rotPerTick = 5
 
 	speedMaxDefault = 2
-	fireRateDefault = 10
+	fireRateDefault = 5
 	projSpeedDefault = 2
 
 	bulletSpawnOffset = 5
