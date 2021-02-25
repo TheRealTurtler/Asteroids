@@ -5,6 +5,8 @@ from src.Color import Color
 
 
 class Highscores:
+	maxCountScores = 10
+
 	def __init__(self, highscoreFile):
 		if type(highscoreFile) != str:
 			raise TypeError
@@ -15,9 +17,18 @@ class Highscores:
 		self.data = []
 		self.ui = []
 
-		with open(self.highscoreFile, 'r') as handle:
-			self.data = handle.readlines()
+		try:
+			with open(self.highscoreFile, 'r') as handle:
+				self.data = handle.readlines()
+		except OSError:
+			# Datei nicht vorhanden
+			with open(self.highscoreFile, 'w') as handle:
+				for i in range(0, 10):
+					self.data.append("0\n")
 
+				handle.writelines(self.data)
+
+		# Highscore auslesen (Datei ist sortiert, also ersten Score)
 		self.highscore = int(self.data[0][:-1])
 
 		textSpacing = 20
