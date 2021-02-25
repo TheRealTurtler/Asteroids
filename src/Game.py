@@ -14,7 +14,7 @@ from src.Text import Text
 
 class Game:
 	maxCountAsteroids = 10
-	maxCountSmallerAsteroids = 5
+	maxCountSmallerAsteroids = 4
 	maxCountPowerUps = 5
 
 	class GameStates:
@@ -170,10 +170,12 @@ class Game:
 		# Beschleunigung und Rotation nach gedrückten Tasten festlegen
 		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
 			self.player.acc = self.player.lookDir * Player.accMax
+			self.player.boostActive = True
 		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
 			self.player.rot -= Player.rotPerTick
 		if self.eventHandler.pressed_S or not self.eventHandler.pressed_W:
 			self.player.acc = pygame.Vector2(0, 0)
+			self.player.boostActive = False
 		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
 			self.player.rot += Player.rotPerTick
 

@@ -1,6 +1,8 @@
 import pygame
 
 from src.PowerUp import PowerUp
+from src.Color import Color
+from src.Boost import Boost
 
 
 class Player:
@@ -15,6 +17,7 @@ class Player:
 	projSpeedDefault = 2.5
 
 	bulletSpawnOffset = 5
+	boostPointOffset = 5
 
 	def __init__(self):
 		self.pos = pygame.Vector2(0, 0)  # Position
@@ -41,8 +44,12 @@ class Player:
 		# TODO: center player in hit-circle
 		self.polygonPoints = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
 
-		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]
+		self.bulletSpawnPoints = [self.lookDir * Player.bulletSpawnOffset + self.polygonPoints[0]]
 		self.bulletAmount = 1
+
+		self.boostActive = False
+		self.boost = Boost()
+		self.boostPoint = -1 * self.lookDir * Player.boostPointOffset + self.polygonPoints[2]
 
 		self.score = 0
 		self.lives = 5
@@ -116,6 +123,9 @@ class Player:
 					+ pygame.Vector2(-self.lookDir.y, self.lookDir.x) * Player.bulletSpawnOffset * b
 				)
 
+		# Boost Position
+		self.boostPoint = -1 * self.lookDir * Player.boostPointOffset + self.polygonPoints[2]
+
 		# PowerUp-Effekte
 		for p in self.activePowerUps[:]:
 
@@ -132,7 +142,12 @@ class Player:
 
 				self.activePowerUps.remove(p)
 
-	def draw(self, screen, color=pygame.Color(255, 255, 255)):
+		if self.boostActive:
+			self.boost.boost(self.boostPoint, -1 * self.lookDir)
+
+		self.boost.update()
+
+	def draw(self, screen, color = Color.WHITE):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
@@ -140,7 +155,7 @@ class Player:
 			raise TypeError
 
 		pygame.draw.polygon(screen, color, self.polygonPoints, 2)
-		# pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
+		self.boost.draw(screen)
 
 	def collectPowerUp(self, powerUp):
 		if type(powerUp) != PowerUp:
