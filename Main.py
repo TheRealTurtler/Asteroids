@@ -14,7 +14,7 @@ screenSize = (1280, 720)
 screen = pygame.display.set_mode(screenSize)
 
 eventHandler = EventHandler()
-highscores = Highscores("./resources/highscores.txt")
+highscores = Highscores("./resources/highscores.dat")
 menu = Menu(screenSize, eventHandler)
 game = Game(screenSize, eventHandler, highscores.highscore)
 gameOver = GameOver(screenSize, eventHandler)
