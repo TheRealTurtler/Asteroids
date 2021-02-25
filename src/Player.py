@@ -21,8 +21,8 @@ class Player:
 		self.vel = pygame.Vector2(0, 0)  # Geschwindigkeit
 		self.acc = pygame.Vector2(0, 0)  # Beschleunigung
 		self.rot = 0					 # Rotation
-		self.size = 10
-		self.lookDir = pygame.Vector2(0, 1)		# Blickrichtung
+		self.size = 12
+		self.lookDir = pygame.Vector2(0, -1)		# Blickrichtung
 
 		self.speedMax = self.speedMaxDefault
 		self.fireRate = self.fireRateDefault
@@ -32,10 +32,10 @@ class Player:
 		self.activePowerUps = []
 
 		self.pointOffsets = [
-			pygame.Vector2(0, 5),
-			pygame.Vector2(-5, -10),
-			pygame.Vector2(0, -5),
-			pygame.Vector2(5, -10)
+			pygame.Vector2(0, -15),
+			pygame.Vector2(-9, 12),
+			pygame.Vector2(0, 6),
+			pygame.Vector2(9, 12)
 		]
 
 		# TODO: center player in hit-circle
@@ -139,8 +139,8 @@ class Player:
 		if type(color) != pygame.Color:
 			raise TypeError
 
-		pygame.draw.polygon(screen, color, self.polygonPoints, 1)
-		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
+		pygame.draw.polygon(screen, color, self.polygonPoints, 2)
+		# pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
 
 	def collectPowerUp(self, powerUp):
 		if type(powerUp) != PowerUp:
