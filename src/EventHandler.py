@@ -28,11 +28,11 @@ class EventHandler:
 	def handleEvents(self):
 		for event in pygame.event.get():
 
-			# Game quit
+			# Spiel beendet
 			if event.type == pygame.QUIT:
 				self.windowActive = False
 
-			# Key pressed
+			# Taste gedrueckt
 			elif event.type == pygame.KEYDOWN:
 				self.pressed_Any = True
 
@@ -57,7 +57,7 @@ class EventHandler:
 				elif event.key == pygame.K_ESCAPE:
 					self.pressed_Esc = True
 
-			# Key released
+			# Taste losgelassen
 			elif event.type == pygame.KEYUP:
 				self.pressed_Any = False
 
@@ -82,13 +82,13 @@ class EventHandler:
 				elif event.key == pygame.K_ESCAPE:
 					self.pressed_Esc = False
 
-			# Mouse button pressed
+			# Maustaste gedrueckt
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				if event.button == 1:
 					self.pressed_M_Left = True
 					self.pressed_M_Pos = event.pos
 
-			# Mouse button released
+			# Maustaste losgelassen
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if event.button == 1:
 					self.released_M_Left = True

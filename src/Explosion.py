@@ -1,38 +1,48 @@
 import pygame
 import random
+
 from src.SpaceObject import SpaceObject
 from src.Particle import Particle
 
 
 class Explosion(SpaceObject):
+	# Partikeleinstellungen
+	particleMinSpawnCount = 5
+	particleMaxSpawnCount = 20
+	particleMaxSize = 3
+	particleMaxSpeed = 3
 
 	def __init__(self, pos):
-
 		# Definiert Ursprung der Explosion
 		super().__init__(pos)
 
 		self.particles = []
 
-		for x in range(random.randint(5, 20)):
-
+		for x in range(random.randint(Explosion.particleMinSpawnCount, Explosion.particleMaxSpawnCount)):
+			# Zufaellige Richtung
 			particleDir = pygame.Vector2(
-				(random.random() - 0.5),		# Zufällige Richtung
+				(random.random() - 0.5),
 				(random.random() - 0.5)
 			)
 
-			particleSize = random.randrange(1, 3)		# Zufällige Größe für Partikel
-			particleSpeed = random.randrange(1, 4)		# Zufällige Geschwindigkeit für Partikel
-			particleColor = pygame.Color(255, random.randrange(0, 256), 0)		# Farbe zwischen rot und gelb
+			# Zufaellige Groesse fuer Partikel
+			particleSize = random.randint(1, Explosion.particleMaxSize)
 
-			self.particles.append(
-				Particle(pygame.Vector2(pos), particleDir, particleSpeed, particleSize, particleColor)
-			)
+			# Zufaellige Geschwindigkeit fuer Partikel
+			particleSpeed = random.randint(1, Explosion.particleMaxSpeed)
+
+			# Farbe zwischen rot und gelb
+			particleColor = pygame.Color(255, random.randint(0, 255), 0)
+
+			# Partikel erzeugen
+			self.particles.append(Particle(pygame.Vector2(pos), particleDir, particleSpeed, particleSize, particleColor))
 
 	def update(self):
 		for p in self.particles[:]:
+			# Partikel aktualisieren
 			p.update()
 
-			# Partikel löschen, wenn stehen geblieben
+			# Partikel loeschen, wenn stehen geblieben
 			if p.speed == 0:
 				self.particles.remove(p)
 
@@ -42,4 +52,5 @@ class Explosion(SpaceObject):
 			raise TypeError
 
 		for p in self.particles:
+			# Partikel zeichnen
 			p.draw(screen)
