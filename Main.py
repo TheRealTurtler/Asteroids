@@ -1,3 +1,22 @@
+# ==============================================================================
+#
+# WICHTIG: ZUM AUSFUEHREN WIRD DAS MODUL "pygame" BENOETIGT!
+#
+# ==============================================================================
+#
+# Steuerung:
+# 	Rotation links / rechts: A / D
+# 	Boost: W
+# 	Schuss: Leertaste
+# 	Menue: Esc
+#
+# Ziel des Spiels ist es, so viele Asteroiden wie moeglich zu zerstoeren, ohne
+# dabei selbst Schaden zu nehmen.
+#
+# Die farbigen PowerUps koennen hierbei behilflich sein.
+#
+# ==============================================================================
+
 import pygame
 
 from src.EventHandler import EventHandler
