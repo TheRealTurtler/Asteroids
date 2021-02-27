@@ -2,6 +2,7 @@ import pygame
 
 
 class Color:
+	# Farben
 	WHITE = pygame.Color(255, 255, 255)
 	BLACK = pygame.Color(0, 0, 0)
 	GREEN = pygame.Color(0, 255, 0)

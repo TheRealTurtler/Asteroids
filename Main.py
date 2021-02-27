@@ -6,6 +6,7 @@ from src.Game import Game
 from src.Highscores import Highscores
 from src.GameOver import GameOver
 
+# Pygame initialisieren
 pygame.init()
 
 # ==============================================================================
@@ -14,7 +15,7 @@ screenSize = (1280, 720)
 screen = pygame.display.set_mode(screenSize)
 
 eventHandler = EventHandler()
-highscores = Highscores("./resources/highscores.txt")
+highscores = Highscores("./resources/highscores.dat")
 menu = Menu(screenSize, eventHandler)
 game = Game(screenSize, eventHandler, highscores.highscore)
 gameOver = GameOver(screenSize, eventHandler)
@@ -42,7 +43,7 @@ while eventHandler.windowActive:
 			game.resume()
 		elif menu.selection == Menu.MenuSelection.startNewGame:
 			# Spiel neu starten
-			# Nicht ideal, besser waere das vorhandene Game Objekt auf einen Ausganszustand zurueckzusetzen
+			# Nicht ideal, besser waere das vorhandene Game Objekt auf einen Ausgangszustand zurueckzusetzen
 			# TODO: better restart
 			game = Game(screenSize, eventHandler, highscores.highscore)
 			game.state = Game.GameStates.active
@@ -66,7 +67,7 @@ while eventHandler.windowActive:
 		game.draw(screen)
 
 	elif game.state == Game.GameStates.over:
-		# Game Over
+		# Game Over -> Score mit Highscores vergleichen
 		if highscores.addScore(game.player.score):
 			gameOver.newHighscore(game.player.score)
 		else:
@@ -76,10 +77,12 @@ while eventHandler.windowActive:
 		gameOver.active = True
 
 	elif game.state == Game.GameStates.ended:
+		# Game Over -> Score nicht mit Highscores vergleichen
 		game.state = Game.GameStates.inactive
 		gameOver.active = True
 
 	elif gameOver.active:
+		# Game Over Screen
 		if pygame.time.get_ticks() - gameOver.timeUpdated > GameOver.displayDelay and eventHandler.pressed_Any:
 			gameOver.active = False
 			menu.reload()
@@ -91,7 +94,6 @@ while eventHandler.windowActive:
 
 	# Refreshrate
 	clock.tick(60)
-	# clock.tick()
 
 	# FPS Anzeige
 	title = "Asteroids" \

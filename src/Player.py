@@ -1,51 +1,88 @@
 import pygame
 
 from src.PowerUp import PowerUp
+from src.Color import Color
+from src.Boost import Boost
 
 
+# Spieler ist mit Absicht kein Space Object, da dies die Beschleunigungs- und Reibungsrechnung unnoetig
+# verkomplizieren wuerde
 class Player:
+	# Maximalbeschleunigung
 	accMax = 0.25
 
-	# accPerTick = 0.1
+	# Reibung
 	frictionPerTick = 0.02
+
+	# Rotationsgeschwindigkeit
 	rotPerTick = 5
 
+	# Standardwerte
 	speedMaxDefault = 1.5
 	fireRateDefault = 5
 	projSpeedDefault = 2.5
 
+	# Projektil- und Boost-Offsets
 	bulletSpawnOffset = 5
+	boostPointOffset = 5
 
-	def __init__(self):
-		self.pos = pygame.Vector2(0, 0)  # Position
-		self.vel = pygame.Vector2(0, 0)  # Geschwindigkeit
-		self.acc = pygame.Vector2(0, 0)  # Beschleunigung
-		self.rot = 0					 # Rotation
-		self.size = 10
-		self.lookDir = pygame.Vector2(0, 1)		# Blickrichtung
+	def __init__(self, pos = pygame.Vector2(0, 0)):
+		if type(pos) != pygame.Vector2:
+			raise TypeError
 
-		self.speedMax = self.speedMaxDefault
-		self.fireRate = self.fireRateDefault
-		self.timeLastShot = 0
-		self.projSpeed = self.projSpeedDefault
+		self.pos = pos								# Position
+		self.vel = pygame.Vector2(0, 0)				# Geschwindigkeit
+		self.acc = pygame.Vector2(0, 0)				# Beschleunigung
+		self.rot = 0								# Rotation
+		self.size = 12								# Groesse der Hit-"box" (Kreis)
+		self.lookDir = pygame.Vector2(0, -1)		# Blickrichtung
 
+		self.speedMax = self.speedMaxDefault		# Maximalgeschwindigkeit
+		self.fireRate = self.fireRateDefault		# Feuerrate
+		self.timeLastShot = 0						# Zeit des letzten Schusses
+		self.projSpeed = self.projSpeedDefault		# Projektilgeschwindigkeit
+
+		# Eingesammelte PowerUps
 		self.activePowerUps = []
 
-		self.pointOffsets = [
-			pygame.Vector2(0, 5),
-			pygame.Vector2(-5, -10),
-			pygame.Vector2(0, -5),
-			pygame.Vector2(5, -10)
+		# Polygonpunkte relativ zur Spielerposition (Mitte)
+		self.polygonPointOffsets = [
+			pygame.Vector2(0, -15),
+			pygame.Vector2(-9, 12),
+			pygame.Vector2(0, 6),
+			pygame.Vector2(9, 12)
 		]
 
-		# TODO: center player in hit-circle
-		self.polygonPoints = [pygame.Vector2(self.pos + offset) for offset in self.pointOffsets]
+		# Polygonpunkte absolut
+		self.polygonPoints = [pygame.Vector2(self.pos + offset) for offset in self.polygonPointOffsets]
 
-		self.bulletSpawnPoints = [self.lookDir * self.bulletSpawnOffset + self.polygonPoints[0]]
+		# Spawnpunkte der Projektile
+		self.bulletSpawnPoints = [self.lookDir * Player.bulletSpawnOffset + self.polygonPoints[0]]
 		self.bulletAmount = 1
 
+		# Boost
+		self.boostActive = False
+		self.boost = Boost()
+		self.boostPoint = -1 * self.lookDir * Player.boostPointOffset + self.polygonPoints[2]
+
+		# Punkte und Leben
 		self.score = 0
 		self.lives = 5
+
+	def collectPowerUp(self, powerUp):
+		if type(powerUp) != PowerUp:
+			raise TypeError
+
+		self.activePowerUps.append(powerUp)
+
+		if powerUp.id == PowerUp.PowerUpIDs.fireRate:				# Feuerrate
+			self.fireRate += Player.fireRateDefault
+		elif powerUp.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler
+			self.speedMax += Player.speedMaxDefault					# (Spieler kann schneller werden als Projektile -> Feature? :) )
+		elif powerUp.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
+			self.projSpeed += Player.projSpeedDefault
+		elif powerUp.id == PowerUp.PowerUpIDs.multiShot:			# Multi-Schuss
+			self.bulletAmount += 1
 
 	def update(self):
 		# Beschleunigung limitieren
@@ -53,6 +90,7 @@ class Player:
 			self.acc = Player.accMax * self.acc.normalize()
 
 		# "Reibung"
+		# (ja, uns ist bewusst dass es im Vakuum keine Reibung gibt, aber die Steuerung ist so schoener :) )
 		if self.acc.x == 0:
 			if self.vel.x > 0:
 				self.acc.x = -Player.frictionPerTick
@@ -66,6 +104,8 @@ class Player:
 				self.acc.y += Player.frictionPerTick
 
 		# Untergrenze Beschleunigung
+		# (damit float Werte mit == 0 verglichen werden koennen;
+		# ausserdem ist eine Bewegung von 1e-6 Pixel pro Bild unsinnig)
 		if abs(self.acc.x) < 1e-6:
 			self.acc.x = 0
 		if abs(self.acc.y) < 1e-6:
@@ -90,9 +130,11 @@ class Player:
 		# Rotation
 		self.rot %= 360
 
-		for (idx, offset) in enumerate(self.pointOffsets):
+		# Position der Polygonpunkte neu berechnen
+		for (idx, offset) in enumerate(self.polygonPointOffsets):
 			self.polygonPoints[idx] = self.pos + offset.rotate(self.rot)
 
+		# Position der Projektil-Spawnpunkte neu berechnen
 		self.bulletSpawnPoints = []
 		self.lookDir = (self.polygonPoints[0] - self.pos).normalize()
 
@@ -116,14 +158,16 @@ class Player:
 					+ pygame.Vector2(-self.lookDir.y, self.lookDir.x) * Player.bulletSpawnOffset * b
 				)
 
+		# Boost Position neu berechnen
+		self.boostPoint = -1 * self.lookDir * Player.boostPointOffset + self.polygonPoints[2]
+
 		# PowerUp-Effekte
 		for p in self.activePowerUps[:]:
-
-			# PowerUps nach Ablauf löschen
+			# PowerUps nach Ablauf entfernen
 			if pygame.time.get_ticks() - p.collectionTime > p.duration:
 				if p.id == PowerUp.PowerUpIDs.fireRate:					# Feuerrate
 					self.fireRate -= Player.fireRateDefault
-				elif p.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
+				elif p.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler
 					self.speedMax -= Player.speedMaxDefault
 				elif p.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
 					self.projSpeed -= Player.projSpeedDefault
@@ -132,27 +176,22 @@ class Player:
 
 				self.activePowerUps.remove(p)
 
-	def draw(self, screen, color=pygame.Color(255, 255, 255)):
+		# Boost Partikel
+		if self.boostActive:
+			self.boost.boost(self.boostPoint, -1 * self.lookDir)
+
+		# Boost aktualisieren
+		self.boost.update()
+
+	def draw(self, screen, color = Color.WHITE):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
 		if type(color) != pygame.Color:
 			raise TypeError
 
-		pygame.draw.polygon(screen, color, self.polygonPoints, 1)
-		pygame.draw.circle(screen, pygame.Color(255, 0, 0), self.pos, self.size, 1)
+		# Spieler zeichnen
+		pygame.draw.polygon(screen, color, self.polygonPoints, 2)
 
-	def collectPowerUp(self, powerUp):
-		if type(powerUp) != PowerUp:
-			raise TypeError
-
-		self.activePowerUps.append(powerUp)
-
-		if powerUp.id == PowerUp.PowerUpIDs.fireRate:				# Feuerrate
-			self.fireRate += Player.fireRateDefault
-		elif powerUp.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler	# TODO: fix Bug: player faster than projectiles
-			self.speedMax += Player.speedMaxDefault
-		elif powerUp.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
-			self.projSpeed += Player.projSpeedDefault
-		elif powerUp.id == PowerUp.PowerUpIDs.multiShot:			# Multi-Schuss
-			self.bulletAmount += 1
+		# Boost zeichnen
+		self.boost.draw(screen)

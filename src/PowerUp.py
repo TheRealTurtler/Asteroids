@@ -5,11 +5,10 @@ from src.Color import Color
 
 
 class PowerUp(SpaceObject):
-	"""description of class"""
-
+	# PowerUp-Einstellungen
 	size = 10
 	availablePowerUps = 4
-	spawnDelay = 10000
+	spawnDelay = 10000		# Einheit: ms
 
 	class PowerUpIDs:
 		fireRate = 0
@@ -17,35 +16,36 @@ class PowerUp(SpaceObject):
 		projectileSpeed = 2
 		multiShot = 3
 
-	def __init__(self, pos, id):
-		if type(id) == int:
-			self.id = id
-		else:
+	def __init__(self, pos, powerUpID):
+		if type(pos) != pygame.Vector2:
 			raise TypeError
+
+		if type(powerUpID) != int:
+			raise TypeError
+
+		self.id = powerUpID
 
 		self.collectionTime = 0
 		self.duration = 10000
 
-		super().__init__(pos, pygame.Vector2(0, 0), 0, self.size)
+		# Farbe festlegen
+		if self.id == PowerUp.PowerUpIDs.fireRate:				# Feuerrate
+			self.color = Color.RED
+		elif self.id == PowerUp.PowerUpIDs.maxSpeed:			# Maximalgeschwindigkeit Spieler
+			self.color = Color.GREEN
+		elif self.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
+			self.color = Color.BLUE
+		elif self.id == PowerUp.PowerUpIDs.multiShot:			# Multi-Schuss
+			self.color = Color.ORANGE
+		else:
+			raise LookupError
 
-	def update(self):
-		pass
+		# SpaceObject initialisieren
+		super().__init__(pos, pygame.Vector2(0, 0), 0, self.size)
 
 	def draw(self, screen):
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
-		color = pygame.Color(255, 255, 255)
-
-		if self.id == PowerUp.PowerUpIDs.fireRate:					# Feuerrate
-			color = Color.RED
-		elif self.id == PowerUp.PowerUpIDs.maxSpeed:				# Maximalgeschwindigkeit Spieler
-			color = Color.GREEN
-		elif self.id == PowerUp.PowerUpIDs.projectileSpeed:		# Projektil-Geschwindigkeit
-			color = Color.BLUE
-		elif self.id == PowerUp.PowerUpIDs.multiShot:				# Multi-Schuss
-			color = Color.ORANGE
-		else:
-			raise LookupError
-
-		pygame.draw.circle(screen, color, self.pos, self.size)
+		# PowerUp zeichnen
+		pygame.draw.circle(screen, self.color, self.pos, self.size)

@@ -13,15 +13,17 @@ from src.Text import Text
 
 
 class Game:
-	maxCountAsteroids = 10
-	maxCountSmallerAsteroids = 5
+	# Spieleinstellungen
+	maxCountAsteroids = 8
+	maxCountSmallerAsteroids = 4
 	maxCountPowerUps = 5
 
+	# Spielzustaende
 	class GameStates:
-		inactive = 0		# Spiel pausiert (Menü)
+		inactive = 0		# Spiel pausiert (Menue)
 		active = 1			# Spiel aktiv
-		over = 2			# Spiel vorbei (Highscore noch nicht überprüft)
-		ended = 3			# Spiel vorbei (Highscore bereits überprüft)
+		over = 2			# Spiel vorbei (Highscore noch nicht ueberprueft)
+		ended = 3			# Spiel vorbei (Highscore bereits ueberprueft)
 
 	def __init__(self, screenSize, eventHandler, highscore):
 		if type(screenSize) != tuple:
@@ -49,48 +51,42 @@ class Game:
 		self.asteroids = []
 		self.explosions = []
 		self.ui = []
-
 		self.collectablePowerUps = []
+
 		self.lastPowerUpSpawnTime = pygame.time.get_ticks()
-		#self.itemActiveFlag = 0
-		#self.upgrade = ["firerate", "speed", "projectilspeed"]
-		#self.itemDuration = 10000
 
-		#self.projSpeedDefault = 2
-		#self.projSpeed = self.projSpeedDefault
-
-		#self.expDuration = 1000
-
-		self.player = Player()
-
-		self.player.pos = pygame.Vector2(self.screenSize[0] / 2, self.screenSize[1] / 2)
+		self.player = Player(pygame.Vector2(self.screenSize[0] / 2, self.screenSize[1] / 2))
 
 		pygame.display.set_caption("Asteroids")
 
-		# Sound Einstellungen
-		laser_wav = r'./resources/laser.wav'  # Laser pew sound lesen
-		asteroid_wav = r'./resources/asteroid3.wav'  # asteriod explosion sound lesen
-		powerup_wav = r'./resources/powerUp1.wav'  # powerUp sound lesen
+		# Sounddateien
+		laser_wav = r'./resources/laser.wav'  			# Sound Laser
+		asteroid_wav = r'./resources/asteroid3.wav'  	# Sound Explosion
+		powerup_wav = r'./resources/powerUp1.wav'  		# Sound PowerUp
 
 		Sound.init()  # Initialisieren von pygame.mixer
 
-		self.soundLaser = Sound(laser_wav, 0.03)  # Instanz gunSound der Klasse Sound hat nun Laser pew sound
+		# Sounds laden
+		self.soundLaser = Sound(laser_wav, 0.03)
 		self.soundExplosion = Sound(asteroid_wav, 0.1)
-		self.powerup = Sound(powerup_wav, 0.03)
+		self.soundPowerUp = Sound(powerup_wav, 0.1)
 		# Hintergrundmusik ist Tetris-Theme in pygame.music (keine Klasse da nur eine Hintergrundmusik)
 		pygame.mixer.music.load('./resources/Tetris.wav')
-		pygame.mixer.music.set_volume(0.03)  # leiser machen
-		pygame.mixer.music.play(-1)  # Spiele Tetris-Theme als Loop (-1) ab
+		pygame.mixer.music.set_volume(0.03)
+		pygame.mixer.music.play(-1)		# Spiele Tetris-Theme als Loop (-1) ab
 
+		# UI-Einstellungen
 		textSpacing = 20
 		textUpperLeft = pygame.Vector2(textSpacing, textSpacing)
 		textUpperRight = pygame.Vector2(self.screenSize[0] - textSpacing, textSpacing)
 
+		# UI (links oben)
 		textScore = Text(pygame.Vector2(textUpperLeft), "Score:")
 		self.textScoreNumber = Text(pygame.Vector2(textUpperLeft.x + textScore.width() + textSpacing, textUpperLeft.y), "0")
 		textLives = Text(pygame.Vector2(textUpperLeft.x, textUpperLeft.y + textScore.height() + textSpacing), "Lives:")
 		self.textLivesNumber = Text(pygame.Vector2(textUpperLeft.x + textLives.width() + textSpacing, textUpperLeft.y + textScore.height() + textSpacing), "5")
 
+		# UI (rechts oben)
 		textHighscore = Text(pygame.Vector2(0, 0), "Highscore:")
 		textHighscoreNumber = Text(pygame.Vector2(0, 0), str(self.highscore))
 		textHighscore.pos = pygame.Vector2(textUpperRight.x - textHighscoreNumber.width() - textSpacing - textHighscore.width(), textUpperRight.y)
@@ -110,6 +106,7 @@ class Game:
 		if type(col2) not in (Player, Asteroid, Projectile, PowerUp):
 			raise TypeError
 
+		# Kreis - Kreis Kollision
 		if (col2.pos - col1.pos).magnitude() < col1.size + col2.size:
 			return True
 
@@ -129,23 +126,27 @@ class Game:
 	def update(self):
 		# Asteroiden spawnen
 		if len(self.asteroids) == 0:  # Neue Asteroiden spawnen, wenn keine mehr da sind
-			for a in range(0, random.randrange(1, Game.maxCountAsteroids)):  # Zufällige Anzahl an Asteroiden spawnen
+			for a in range(0, random.randint(1, Game.maxCountAsteroids)):  # Zufaellige Anzahl an Asteroiden spawnen
 				pos = self.player.pos
 
 				# Asteroid nicht direkt auf Spieler spawnen
 				while (pos - self.player.pos).magnitude() < Asteroid.sizeBig * 4:
+					# Zufaellige Position auf dem Bildschirm
 					pos = pygame.Vector2(
-						random.randrange(0, self.screenSize[0]),  # Zufällige Position auf dem Bildschirm
-						random.randrange(0, self.screenSize[1])
+						random.randint(0, self.screenSize[0]),
+						random.randint(0, self.screenSize[1])
 					)
 
+				# Zufaellige Geschwindigkeit
 				vel = pygame.Vector2(
-					(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
-					(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
+					(random.random() - 0.5) * 2 * Asteroid.maxSpeed,
+					(random.random() - 0.5) * 2 * Asteroid.maxSpeed
 				)
 
-				rotSpeed = random.uniform(-2, 2)
+				# Zufaellige Rotationsgeschwindigkeit (normalverteilt, weil schoener)
+				rotSpeed = random.uniform(-Asteroid.maxRotSpeed, Asteroid.maxRotSpeed)
 
+				# Asteroid erzeugen
 				self.asteroids.append(Asteroid(pos, vel, rotSpeed))
 
 		# PowerUp spawnen
@@ -155,6 +156,7 @@ class Game:
 		if pygame.time.get_ticks() - self.lastPowerUpSpawnTime > PowerUp.spawnDelay:
 			self.lastPowerUpSpawnTime = pygame.time.get_ticks()
 
+			# Maximale PowerUp Anzahl limitieren
 			if len(self.collectablePowerUps) < Game.maxCountPowerUps:
 				pos = self.player.pos
 
@@ -165,15 +167,18 @@ class Game:
 						random.randrange(0, self.screenSize[1])
 					)
 
+				# PowerUp erzeugen
 				self.collectablePowerUps.append(PowerUp(pos, random.randrange(0, PowerUp.availablePowerUps)))
 
 		# Beschleunigung und Rotation nach gedrückten Tasten festlegen
 		if self.eventHandler.pressed_W and not self.eventHandler.pressed_S:
 			self.player.acc = self.player.lookDir * Player.accMax
+			self.player.boostActive = True
 		if self.eventHandler.pressed_A and not self.eventHandler.pressed_D:
 			self.player.rot -= Player.rotPerTick
 		if self.eventHandler.pressed_S or not self.eventHandler.pressed_W:
 			self.player.acc = pygame.Vector2(0, 0)
+			self.player.boostActive = False
 		if self.eventHandler.pressed_D and not self.eventHandler.pressed_A:
 			self.player.rot += Player.rotPerTick
 
@@ -197,10 +202,10 @@ class Game:
 			if pygame.time.get_ticks() - self.player.timeLastShot > 1000 / self.player.fireRate:
 				self.player.timeLastShot = pygame.time.get_ticks()
 
-				# Laser sound
+				# Sound Laser
 				self.soundLaser.play()
 
-				# Neues Projektil zur Liste hinzufügen
+				# Projektil erzeugen
 				for sp in self.player.bulletSpawnPoints:
 					self.projectiles.append(
 						Projectile(
@@ -211,7 +216,7 @@ class Game:
 					)
 
 		for p in self.projectiles[:]:
-			# Positionen aller Projektile aktualisieren
+			# Projektil aktualisieren
 			p.update()
 
 			# Spielfeldrand verlassen -> auf gegenüberliegender Seite weiter
@@ -229,12 +234,12 @@ class Game:
 				p.pos.y = 0
 				p.wrap += 1
 
-			# Projektile löschen, wenn sie zu oft den Bildschirmrand verlassen haben oder stehen bleiben
-			if p.wrap > p.maxWrap or p.dir == pygame.Vector2(0, 0):
+			# Projektile entfernen, wenn sie zu oft den Bildschirmrand verlassen haben oder stehen bleiben
+			if p.wrap > Projectile.maxWrap or p.dir == pygame.Vector2(0, 0):
 				self.projectiles.remove(p)
 
 		for a in self.asteroids:
-			# Positionen aller Asteroiden aktualisieren
+			# Asteroid aktualisieren
 			a.update()
 
 			# Spielfeldrand verlassen -> auf gegenüberliegender Seite weiter
@@ -249,10 +254,10 @@ class Game:
 				a.pos.y = 0
 
 		for e in self.explosions:
-			# Position aller Explosionen aktualisieren
+			# Explosion aktualisieren
 			e.update()
 
-			# Lösche Explosion
+			# Explosion entfernen, wenn keine Partikel mehr da
 			if len(e.particles) == 0:
 				self.explosions.remove(e)
 
@@ -260,9 +265,10 @@ class Game:
 		for col1 in self.projectiles[:]:
 			collision = False
 
-			# Kugel - Spieler
+			# Projektil - Spieler
 			if self.colCircle(col1, self.player):
 				collision = True
+				# Explosion
 				self.soundExplosion.stop()  # Sound anhalten (falls bereits aktiv)
 				self.soundExplosion.play()  # Sound abspielen
 				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
@@ -271,10 +277,11 @@ class Game:
 				self.player.lives -= 1 if self.player.lives > 0 else 0
 				self.textLivesNumber.setText(str(self.player.lives))
 
-			# Kugel - Asteroid
+			# Projektil - Asteroid
 			for col2 in self.asteroids[:]:
 				if self.colCircle(col1, col2):
 					collision = True
+					# Explosion
 					self.soundExplosion.stop()		# Sound anhalten (falls bereits aktiv)
 					self.soundExplosion.play()		# Sound abspielen
 					self.explosions.append(Explosion(pygame.Vector2(col2.pos)))
@@ -285,49 +292,49 @@ class Game:
 
 					# Wenn Asteroid groß genug -> kleinere Asteroiden spawnen
 					if col2.size != Asteroid.sizeSmall:
-						for a in range(0, random.randrange(1, Game.maxCountSmallerAsteroids)):		# Zufällige Anzahl kleinerer Asteroiden spawnen
+						if col2.size == Asteroid.sizeMedium:
+							size = Asteroid.sizeSmall
+						else:
+							size = Asteroid.sizeMedium
+
+						# Zufaellige Anzahl kleinerer Asteroiden spawnen
+						for a in range(0, random.randint(1, Game.maxCountSmallerAsteroids)):
+							# Zufaelliger Abstand zum vorherigen Asteroiden
 							pos = col2.pos + pygame.Vector2(
-								random.randrange(-col2.size, col2.size),  # Zufälliger Abstand zum vorherigen Asteroiden
+								random.randrange(-col2.size, col2.size),
 								random.randrange(-col2.size, col2.size)
 							)
 
+							# Zufaellige Geschwindigkeit
 							vel = pygame.Vector2(
-								(random.random() - 0.5) * 4,		# Zufällige Geschwindigkeit
-								(random.random() - 0.5) * 4			# * 4, sodass maximale Geschwindigkeit 2 ist
+								(random.random() - 0.5) * 2 * Asteroid.maxSpeed,
+								(random.random() - 0.5) * 2 * Asteroid.maxSpeed
 							)
 
-							size = Asteroid.sizeMedium
-
+							# Zufaellige Rotationsgeschwindigkeit (normalverteilt, weil schoener)
 							rotSpeed = random.uniform(-Asteroid.maxRotSpeed, Asteroid.maxRotSpeed)
 
-							if col2.size == Asteroid.sizeMedium:
-								size = Asteroid.sizeSmall
-
+							# Asteroid erzeugen
 							self.asteroids.append(Asteroid(pos, vel, rotSpeed, size))
 
+					# Asteroid entfernen
 					self.asteroids.remove(col2)
 					break
 
-			# Kugel - Kugel
-			# for col2 in self.projectiles[:] :
-			# 	if col1 == col2 :
-			# 		continue
-			#
-			# 	if self.colCircle(col1, col2) :
-			# 		collision = True
-			# 		self.projectiles.remove(col2)
-			# 		break
-
 			if collision:
+				# Projektil entfernen
 				self.projectiles.remove(col1)
 
 		# Asteroid - Spieler
 		for col in self.asteroids[:]:
 			if self.colCircle(col, self.player):
+				# Explosion
 				self.soundExplosion.stop()  # Sound anhalten (falls bereits aktiv)
 				self.soundExplosion.play()  # Sound abspielen
 				self.explosions.append(Explosion(pygame.Vector2(self.player.pos)))
 				self.explosions.append(Explosion(pygame.Vector2(col.pos)))
+
+				# Asteroid entfernen
 				self.asteroids.remove(col)
 
 				# Lebenszahl aktualisieren
@@ -337,10 +344,12 @@ class Game:
 		# PowerUp - Spieler
 		for (idx, col) in enumerate(self.collectablePowerUps[:]):
 			if self.colCircle(col, self.player):
+				# PowerUp zu spieler hinzufügen
 				col.collectionTime = pygame.time.get_ticks()
-				self.powerup.play()
+				self.soundPowerUp.play()
 				self.player.collectPowerUp(col)
 
+				# PowerUp entfernen
 				self.collectablePowerUps.remove(col)
 
 		# Game Over
@@ -348,7 +357,7 @@ class Game:
 			self.state = Game.GameStates.over
 
 	def draw(self, screen):
-		# Spielfeld löschen
+		# Spielfeld schwarz zeichnen
 		screen.fill(Color.BLACK)
 
 		# Spieler zeichnen
@@ -370,6 +379,6 @@ class Game:
 		for e in self.explosions:
 			e.draw(screen)
 
-		# Benutzeroberfläche (score etc.) zeichnen
+		# UI (Score etc.) zeichnen
 		for i in self.ui:
 			i.draw(screen)

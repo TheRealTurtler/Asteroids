@@ -6,11 +6,13 @@ from src.Color import Color
 
 
 class Menu:
+	# Menueeinstellungen
 	buttonSize = (300, 60)
 	buttonColor = Color.WHITE
 	buttonColorHover = Color.LIGHT_GREY
 	buttonColorClick = Color.DARK_GREY
 
+	# Menueauswahl
 	class MenuSelection:
 		resumeGame = 0
 		startNewGame = 1
@@ -32,10 +34,12 @@ class Menu:
 		self.active = True
 		self.selection = -1
 
+		# Hintergrund
 		self.backgroundImg = pygame.image.load("./resources/menu_background.png")
 		self.backgroundImg = pygame.transform.scale(self.backgroundImg, screenSize)
 		self.backgroundImg = self.backgroundImg.convert()
 
+		# UI
 		buttonSpacing = 20
 		upperLeft = pygame.Vector2(buttonSpacing, buttonSpacing)
 
@@ -68,6 +72,7 @@ class Menu:
 		if type(point) not in (tuple, list, pygame.Vector2):
 			raise TypeError
 
+		# Test, ob Punkt in Rechteck liegt
 		if rect.x < point[0] < rect.x + rect.width:
 			if rect.y < point[1] < rect.y + rect.height:
 				return True
@@ -75,6 +80,7 @@ class Menu:
 		return False
 
 	def reload(self):
+		# Menue neu laden
 		self.active = True
 		self.selection = -1
 		self.eventHandler.pressed_M_Left = False
@@ -137,10 +143,10 @@ class Menu:
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
-		# Clear screen
+		# Bildschirm schwarz zeichnen
 		screen.fill(Color.BLACK)
 
-		# Hintergrund
+		# Hintergrund zeichnen
 		screen.blit(self.backgroundImg, (0, 0))
 
 		# Buttons zeichnen

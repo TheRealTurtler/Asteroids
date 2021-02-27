@@ -6,8 +6,10 @@ from src.Color import Color
 
 
 class GameOver:
+	# UI-Einstellungen
 	textSpacing = 20
 
+	# Zeit, fuer die Tastendruecke ignoriert werden
 	displayDelay = 1000
 
 	def __init__(self, screenSize, eventHandler):
@@ -27,6 +29,7 @@ class GameOver:
 
 		self.active = False
 
+		# UI
 		self.textGameOver = Text(pygame.Vector2(0, 0), "Game Over", 48)
 		self.textNewHighScore = Text(pygame.Vector2(0, 0), "New Highscore Entry!", 48)
 		self.textScoreNumber = Text(pygame.Vector2(0, 0), "0", 48)
@@ -39,7 +42,7 @@ class GameOver:
 
 		self.textPressAnyKey.pos = pygame.Vector2(
 			self.screenSize[0] / 2 - self.textPressAnyKey.width() / 2,
-			self.screenSize[1] - self.textPressAnyKey.height() - self.textSpacing
+			self.screenSize[1] - self.textPressAnyKey.height() - GameOver.textSpacing
 		)
 
 		self.ui = [self.textGameOver]
@@ -51,6 +54,7 @@ class GameOver:
 		self.timeUpdated = pygame.time.get_ticks()
 
 		if highscore > 0:
+			# Game Over Screen mit Highscore
 			self.textNewHighScore.pos = pygame.Vector2(
 				self.screenSize[0] / 2 - self.textNewHighScore.width() / 2,
 				self.screenSize[1] / 2 - self.textNewHighScore.height() / 2
@@ -58,19 +62,20 @@ class GameOver:
 
 			self.textGameOver.pos = pygame.Vector2(
 				self.screenSize[0] / 2 - self.textGameOver.width() / 2,
-				self.textNewHighScore.pos.y - self.textGameOver.height() - self.textSpacing
+				self.textNewHighScore.pos.y - self.textGameOver.height() - GameOver.textSpacing
 			)
 
 			self.textScoreNumber.setText(str(highscore))
 
 			self.textScoreNumber.pos = pygame.Vector2(
 				self.screenSize[0] / 2 - self.textScoreNumber.width() / 2,
-				self.textNewHighScore.pos.y + self.textNewHighScore.height() + self.textSpacing
+				self.textNewHighScore.pos.y + self.textNewHighScore.height() + GameOver.textSpacing
 			)
 
 			self.ui = [self.textGameOver, self.textNewHighScore, self.textScoreNumber]
 
 		else:
+			# Game Over Screen ohne Highscore
 			self.textGameOver.pos = pygame.Vector2(
 				self.screenSize[0] / 2 - self.textGameOver.width() / 2,
 				self.screenSize[1] / 2 - self.textGameOver.height() / 2
@@ -84,8 +89,9 @@ class GameOver:
 		if type(screen) != pygame.Surface:
 			raise TypeError
 
-		# Spielfeld löschen
+		# Bildschirm schwarz zeichnen
 		screen.fill(Color.BLACK)
 
+		# UI zeichnen
 		for i in self.ui:
 			i.draw(screen)
